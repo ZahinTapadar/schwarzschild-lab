@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schwarzschild Lab</title>
+<style>
+  :root {
+    --bg: #000; --panel: rgba(14, 14, 18, 0.82); --line: rgba(255,255,255,0.09);
+    --text: #e9e6e1; --muted: #9a958d; --accent: #ffad5c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+    font: 12px/1.4 ui-sans-serif, -apple-system, "SF Pro Text", Inter, system-ui, sans-serif; }
+  canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; cursor: crosshair; }
+  #panel { position: fixed; top: 12px; right: 12px; bottom: 12px; width: 290px; overflow-y: auto;
+    background: var(--panel); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px 14px; }
+  #panel.hidden { display: none; }
+  h1 { font-size: 13px; margin: 2px 0 2px; letter-spacing: .02em; }
+  .sub { color: var(--muted); margin-bottom: 8px; }
+  details { border-top: 1px solid var(--line); padding: 6px 0; }
+  summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 2px 0; user-select: none; }
+  .row { display: grid; grid-template-columns: 96px 1fr 46px; gap: 6px; align-items: center; margin: 5px 0; }
+  .row label { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row output { text-align: right; font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .chk { display: flex; gap: 6px; align-items: center; margin: 5px 0; color: var(--muted); }
+  select, button { background: #1f1e22; color: var(--text); border: 1px solid var(--line); border-radius: 6px;
+    padding: 5px 8px; font: inherit; }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  .btns { display: flex; flex-wrap: wrap; gap: 5px; margin: 6px 0; }
+  #hud { position: fixed; left: 12px; top: 12px; padding: 8px 10px; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 10px; font-variant-numeric: tabular-nums; white-space: pre;
+    pointer-events: none; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; }
+  #info { position: fixed; left: 12px; bottom: 12px; padding: 8px 10px; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 10px; white-space: pre; display: none;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; }
+  #help { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); color: var(--muted);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; pointer-events: none; }
+  #toggle { position: fixed; top: 12px; right: 312px; }
+  #panel.hidden ~ #toggle { right: 12px; }
+  #err { position: fixed; inset: 0; display: none; place-items: center; color: #f88; padding: 20px; text-align: center; }
+  @media (max-width: 700px) { #panel { width: auto; left: 12px; top: auto; height: 45vh; } #toggle { right: 12px; } #help { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"></div>
+<div id="info"></div>
+<div id="help">drag: orbit · wheel: zoom · click plane: spawn · click body: inspect · H: hide panel · space: pause</div>
+<div id="panel">
+  <h1>Schwarzschild Lab</h1>
+  <div class="sub">GPU null-geodesic ray tracer · Rust/WASM timelike-geodesic engine</div>
+  <div class="btns" id="presets"></div>
+  <div id="controls"></div>
+</div>
+<button id="toggle">☰</button>
+<div id="err"></div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
