@@ -61,6 +61,9 @@ uniform float uDiskSpeed;
 uniform float uShowDisk;
 uniform float uCamLapse;          // sqrt(1 - 2M/r_cam)
 uniform float uStars, uNebula;
+uniform vec3  uCamVel;            // observer 3-velocity (fraction of c) seen by a local static observer
+uniform float uCamGamma;
+float gObsD = 1.0;                // observer Doppler factor for the current ray
 
 uniform sampler2D uBlackbody;
 
@@ -86,7 +89,7 @@ vec3 starLayer(vec3 d, float scale, float density, float fw) {
   float dist = length(p - sp);
   float w = max(0.045, fw * scale * 0.9);
   float mag = pow(hash13(c + 3.1), 6.0) * 3.0 + 0.08;
-  float T = mix(2800.0, 14000.0, pow(hash13(c + 11.7), 1.6));
+  float T = mix(2800.0, 14000.0, pow(hash13(c + 11.7), 1.6)) * gObsD;
   float g = exp(-dist * dist / (w * w)) * (0.045 * 0.045) / (w * w);
   return blackbody(T) * mag * g;
 }
@@ -135,12 +138,12 @@ vec4 diskSample(vec3 p, vec3 v) {
   float Lz = p.z * n.x - p.x * n.z;
   float dop = 1.0 / max(1.0 - omega * Lz, 0.05);
   float grav = sqrt(max(1.0 - 3.0 * uM / r, 1e-4)) / uCamLapse;
-  float g = grav * mix(1.0, dop, uDoppler);
+  float g = grav * mix(1.0, dop * gObsD, uDoppler);
 
   // turbulent, differentially rotating texture
   float phi = atan(p.z, p.x);
   float ang = phi + mod(omega * uTime * uDiskSpeed, 6.2831853);
-  vec3 q = vec3(cos(ang) * 2.2, sin(ang) * 2.2, x * 0.9);
+  vec3 q = vec3(cos(ang) * 2.2, sin(ang) * 2.2, x * 0.9 + uTime * 0.0035);
   float turb = fbm(q * vec3(1.0, 1.0, 2.6), 5);
   float fine = fbm(vec3(cos(ang) * 6.0, sin(ang) * 6.0, x * 7.0), 4);
   float rings = 0.8 + 0.2 * sin(x * 7.0 + turb * 9.0);
@@ -165,6 +168,16 @@ void main() {
   vec2 uv = (gl_FragCoord.xy / uRes) * 2.0 - 1.0;
   float aspect = uRes.x / uRes.y;
   vec3 dir = normalize(uCamRot * vec3(uv.x * uTanFov * aspect, uv.y * uTanFov, 1.0));
+
+  // Relativistic aberration: the camera direction is measured in the moving
+  // observer's frame; boost it into the local static frame the geodesics use.
+  float b2 = dot(uCamVel, uCamVel);
+  if (b2 > 1e-10) {
+    float bm = sqrt(b2);
+    vec3 bh = uCamVel / bm;
+    gObsD = 1.0 / (uCamGamma * (1.0 - dot(uCamVel, dir)));
+    dir = normalize(dir + ((uCamGamma - 1.0) * dot(dir, bh) - uCamGamma * bm) * bh);
+  }
 
   vec3 x = uCamPos;
   vec3 v = dir;
@@ -243,7 +256,7 @@ void main() {
     x = xn; v = vn;
   }
 
-  vec3 bg = escaped ? sky(normalize(v), 2.0 * uTanFov / uRes.y) : vec3(0.0);
+  vec3 bg = escaped ? sky(normalize(v), 2.0 * uTanFov / uRes.y) * gObsD * gObsD * gObsD : vec3(0.0);
   col += (1.0 - alpha) * bg;
   fragColor = vec4(col, 1.0);
 }`;
@@ -311,6 +324,15 @@ export const POINTS_VS = `#version 300 es
 in vec3 aPos; in float aRadius; in float aKind; in float aRate; in float aColor;
 uniform mat4 uViewProj; uniform vec3 uCam; uniform float uM; uniform float uPx; uniform float uShadowSin;
 out vec3 vCol; out float vA;
+uniform vec3 uCamVel; uniform float uCamGamma;
+vec3 aberrate(vec3 p, vec3 cam) {
+  vec3 rel = p - cam; float dist = length(rel); vec3 d = rel / dist;
+  float b = length(uCamVel);
+  if (b < 1e-6) return p;
+  vec3 bh = uCamVel / b;
+  d = normalize(d + ((uCamGamma - 1.0) * dot(d, bh) + uCamGamma * b) * bh);
+  return cam + d * dist;
+}
 void main() {
   vec3 d = aPos - uCam;
   float dist = length(d);
@@ -319,12 +341,14 @@ void main() {
   float s = length(cross(normalize(d), toBH / camR));
   bool hidden = dot(d, toBH) > 0.0 && dist > camR && s < uShadowSin;
   if (aKind < 0.5 || hidden || length(aPos) < 2.0 * uM) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
-  gl_Position = uViewProj * vec4(aPos, 1.0);
+  gl_Position = uViewProj * vec4(aberrate(aPos, uCam), 1.0);
   gl_PointSize = clamp(uPx * 0.1 / dist, 1.2, 10.0);
+  if (aColor > 1.5) gl_PointSize = min(gl_PointSize, 3.0);
   float rate = clamp(aRate, 0.0, 1.0);
   float hot = clamp(4.0 * uM / length(aPos), 0.0, 1.0);
-  vec3 base = aColor < 0.5 ? vec3(1.0, 0.55, 0.25) : vec3(0.55, 0.75, 1.0);
-  vCol = mix(base, vec3(1.0, 0.92, 0.8), hot) * (1.4 + 4.0 * hot) * rate * rate;
+  vec3 base = aColor < 0.5 ? vec3(1.0, 0.55, 0.25) : aColor < 1.5 ? vec3(0.55, 0.75, 1.0) : vec3(0.8, 0.62, 0.45);
+  float lum = aColor > 1.5 ? 0.22 : 1.0;   // ambient gas is faint
+  vCol = mix(base, vec3(1.0, 0.92, 0.8), hot) * (1.4 + 4.0 * hot) * rate * rate * lum;
   vA = 1.0;
 }`;
 export const POINTS_FS = `#version 300 es
@@ -339,9 +363,18 @@ void main() {
 // Lines for trails and the spacetime-fabric embedding grid (screen pass).
 export const LINES_VS = `#version 300 es
 in vec3 aPos; in vec4 aCol;
-uniform mat4 uViewProj;
+uniform mat4 uViewProj; uniform vec3 uCam;
 out vec4 vCol;
-void main() { gl_Position = uViewProj * vec4(aPos, 1.0); vCol = aCol; }`;
+uniform vec3 uCamVel; uniform float uCamGamma;
+vec3 aberrate(vec3 p, vec3 cam) {
+  vec3 rel = p - cam; float dist = length(rel); vec3 d = rel / dist;
+  float b = length(uCamVel);
+  if (b < 1e-6) return p;
+  vec3 bh = uCamVel / b;
+  d = normalize(d + ((uCamGamma - 1.0) * dot(d, bh) + uCamGamma * b) * bh);
+  return cam + d * dist;
+}
+void main() { gl_Position = uViewProj * vec4(aberrate(aPos, uCam), 1.0); vCol = aCol; }`;
 export const LINES_FS = `#version 300 es
 precision highp float;
 in vec4 vCol; out vec4 o;

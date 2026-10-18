@@ -155,8 +155,9 @@ const params = {
   timeScale: 12, properTime: false, nbody: true, accrete: true, paused: false,
   trails: true, fabric: false, fabricDepth: 0.55, fabricOffset: 4, fabricMassExag: 250,
   spawnType: 'planet', spawnMass: 0.002, vFactor: 1, incl: 0, cloudN: 3000,
+  camMotion: 'orbit', orbitSpeed: 1, bob: true, ambientGas: true, gasCount: 2500,
 };
-const cam = { yaw: 0, pitch: 0.055, dist: 36, tyaw: 0, tpitch: 0.055, tdist: 36 };
+const cam = { yaw: 0, pitch: 0.055, dist: 36, tyaw: 0, tpitch: 0.055, tdist: 36, bob: 0 };
 
 // ---------------------------------------------------------------- UI ---
 const ctl = $('#controls');
@@ -211,6 +212,12 @@ slider(s, 'diskOpacity', 'Opacity', 0.05, 1, 0.01);
 slider(s, 'doppler', 'Doppler shift', 0, 1, 0.01);
 slider(s, 'beaming', 'Beaming exp.', 0, 4, 0.1);
 slider(s, 'diskSpeed', 'Spin anim.', 0, 5, 0.05);
+s = section('Observer motion', true);
+select(s, 'camMotion', 'Camera', [['orbit', 'Orbiting (aberration + Doppler)'], ['drift', 'Slow drift'], ['static', 'Static']]);
+slider(s, 'orbitSpeed', 'Orbit speed', 0, 3, 0.01, null, (v) => (v === 1 ? 'free fall' : '×' + (+v).toFixed(2)));
+check(s, 'bob', 'Gentle vertical drift');
+check(s, 'ambientGas', 'Ambient infalling gas');
+slider(s, 'gasCount', 'Gas particles', 0, 10000, 100);
 s = section('Rendering');
 slider(s, 'fov', 'FOV (deg)', 10, 100, 1);
 slider(s, 'steps', 'Max ray steps', 60, 2000, 10);
@@ -343,9 +350,29 @@ function mul4(a, b) {
   return o;
 }
 
+// Observer velocity measured by a local static observer, and the two
+// directions of the aberration map (static frame <-> observer frame).
+let obsVel = [0, 0, 0], obsGamma = 1;
+function toObserver(d) {
+  const b = Math.hypot(...obsVel);
+  if (b < 1e-6) return d;
+  const bh = obsVel.map((x) => x / b);
+  const k = (obsGamma - 1) * dotV(d, bh) + obsGamma * b;
+  return norm([d[0] + k * bh[0], d[1] + k * bh[1], d[2] + k * bh[2]]);
+}
+function toStatic(d) {
+  const b = Math.hypot(...obsVel);
+  if (b < 1e-6) return d;
+  const bh = obsVel.map((x) => x / b);
+  const k = (obsGamma - 1) * dotV(d, bh) - obsGamma * b;
+  return norm([d[0] + k * bh[0], d[1] + k * bh[1], d[2] + k * bh[2]]);
+}
+
 function cameraFrame() {
-  const pos = [cam.dist * Math.cos(cam.pitch) * Math.sin(cam.yaw), cam.dist * Math.sin(cam.pitch), cam.dist * Math.cos(cam.pitch) * Math.cos(cam.yaw)];
-  const fwd = norm([-pos[0], -pos[1], -pos[2]]);
+  const pitch = cam.pitch + cam.bob;
+  const pos = [cam.dist * Math.cos(pitch) * Math.sin(cam.yaw), cam.dist * Math.sin(pitch), cam.dist * Math.cos(pitch) * Math.cos(cam.yaw)];
+  // aim at where the hole *appears* after aberration, keeping it centred
+  const fwd = toObserver(norm([-pos[0], -pos[1], -pos[2]]));
   const right = norm(crossV(fwd, [0, 1, 0]));
   const up = crossV(right, fwd);
   const tanFov = Math.tan((params.fov * Math.PI) / 360);
@@ -358,7 +385,10 @@ function cameraFrame() {
   return { pos, fwd, right, up, tanFov, aspect, viewProj: mul4(proj, view) };
 }
 
-function project(vp, p) {
+function project(vp, p0) {
+  const rel = sub(p0, frame.pos), dist = Math.hypot(...rel);
+  const d = toObserver(rel.map((x) => x / dist));
+  const p = [frame.pos[0] + d[0] * dist, frame.pos[1] + d[1] * dist, frame.pos[2] + d[2] * dist];
   const x = vp[0] * p[0] + vp[4] * p[1] + vp[8] * p[2] + vp[12];
   const y = vp[1] * p[0] + vp[5] * p[1] + vp[9] * p[2] + vp[13];
   const w = vp[3] * p[0] + vp[7] * p[1] + vp[11] * p[2] + vp[15];
@@ -403,7 +433,7 @@ function click(cx, cy) {
   selected = 0;
   // straight-line ray to the equatorial plane (spawn placement only)
   const u = (cx / canvas.clientWidth) * 2 - 1, v = 1 - (cy / canvas.clientHeight) * 2;
-  const d = norm([0, 1, 2].map((i) => frame.fwd[i] + u * frame.tanFov * frame.aspect * frame.right[i] + v * frame.tanFov * frame.up[i]));
+  const d = toStatic(norm([0, 1, 2].map((i) => frame.fwd[i] + u * frame.tanFov * frame.aspect * frame.right[i] + v * frame.tanFov * frame.up[i])));
   if (Math.abs(d[1]) < 1e-5) return;
   const t = -frame.pos[1] / d[1];
   if (t <= 0) return;
@@ -467,6 +497,25 @@ function fabricLines(out) {
   }
 }
 
+// ------------------------------------------------------- ambient gas ---
+// A sparse, thick halo of massless gas on randomly inclined geodesics. Some
+// orbits are bound, some plunge; swallowed gas is replenished from far out.
+function spawnGasParticle(rMin, rMax, M) {
+  const r = rMin + Math.pow(Math.random(), 0.8) * (rMax - rMin);
+  const a = Math.random() * Math.PI * 2;
+  const inc = (Math.random() + Math.random() + Math.random() - 1.5) * 0.45;
+  const vc = E.circular_v_tau(r) * (0.72 + Math.random() * 0.32);
+  const x = r * Math.cos(a), z = r * Math.sin(a), y = (Math.random() - 0.5) * 0.8 * M;
+  const tx = Math.sin(a), tz = -Math.cos(a);
+  E.add_particle_tau(x, y, z, tx * Math.cos(inc) * vc, Math.sin(inc) * vc, tz * Math.cos(inc) * vc, 0, 0, 1, 2);
+}
+function feedGas(have, M) {
+  const want = params.gasCount;
+  if (have >= want * 0.97) return;
+  if (have < want * 0.3) { for (let i = have; i < want; i++) spawnGasParticle(8 * M, 70 * M, M); return; }
+  for (let i = 0; i < Math.min(25, want - have); i++) spawnGasParticle(50 * M, 75 * M, M);
+}
+
 // -------------------------------------------------------------- loop ---
 let bodies = [];
 let simT = 0, last = performance.now(), fpsAcc = 0, fpsN = 0, fps = 60, resTimer = 0;
@@ -510,18 +559,35 @@ function loop(now) {
   const n = E.pack();
   const buf = new Float32Array(E.memory.buffer, E.out_ptr(), n * STRIDE);
   bodies = [];
-  let debris = 0;
+  let debris = 0, debrisGas = 0;
   for (let i = 0; i < n; i++) {
     const o = i * STRIDE;
     if (buf[o + 4] < 0.5) {
       const id = buf[o + 7];
       bodies.push({ id, p: [buf[o], buf[o + 1], buf[o + 2]], radius: buf[o + 3], rate: buf[o + 5], col: buf[o + 6], m: 0, star: bodyMeta.get(id)?.star });
-    } else debris++;
+    } else { debris++; if (buf[o + 6] > 1.5) debrisGas++; }
   }
   // masses (for fabric wells) come from the UI metadata stored at spawn
   for (const b of bodies) b.m = bodyMeta.get(b.id)?.mass ?? 0;
   const M = E.get_mass();
   if (Math.abs(M - params.M) > 1e-6) { params.M = M; ui.M(); }
+
+  // observer motion: a circular orbit about the hole (free fall at speed 1)
+  const running = !params.paused && params.timeScale > 0;
+  obsVel = [0, 0, 0]; obsGamma = 1;
+  if (params.camMotion === 'orbit') {
+    const r = cam.dist, lapse = Math.max(1e-3, 1 - (2 * M) / r);
+    const omega = params.orbitSpeed * Math.sqrt(M / (r * r * r));      // dphi/dt, coordinate time
+    if (running) { const dy = omega * dt * params.timeScale; cam.yaw += dy; cam.tyaw += dy; }
+    const rc = r * Math.cos(cam.pitch);
+    const vloc = Math.min(0.95, (omega * rc) / Math.sqrt(lapse));     // speed seen by a static observer
+    obsVel = [Math.cos(cam.yaw) * vloc, 0, -Math.sin(cam.yaw) * vloc];
+    obsGamma = 1 / Math.sqrt(1 - vloc * vloc);
+  } else if (params.camMotion === 'drift') {
+    cam.yaw += 0.03 * dt; cam.tyaw += 0.03 * dt;
+  }
+  cam.bob = params.bob && params.camMotion !== 'static' ? 0.035 * Math.sin(now * 0.00012) + 0.015 * Math.sin(now * 0.00031) : 0;
+  if (params.ambientGas) feedGas(debrisGas, M);
 
   cam.yaw += (cam.tyaw - cam.yaw) * Math.min(1, dt * 8);
   cam.pitch += (cam.tpitch - cam.pitch) * Math.min(1, dt * 8);
@@ -560,6 +626,8 @@ function loop(now) {
   gl.uniform1f(R.u.uDiskSpeed, params.diskSpeed);
   gl.uniform1f(R.u.uShowDisk, params.showDisk ? 1 : 0);
   gl.uniform1f(R.u.uCamLapse, camLapse);
+  gl.uniform3fv(R.u.uCamVel, obsVel);
+  gl.uniform1f(R.u.uCamGamma, obsGamma);
   gl.uniform1f(R.u.uStars, params.stars);
   gl.uniform1f(R.u.uNebula, params.nebula);
   gl.uniform1i(R.u.uNB, nb);
@@ -579,6 +647,8 @@ function loop(now) {
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
     gl.uniformMatrix4fv(P.pts.u.uViewProj, false, frame.viewProj);
     gl.uniform3fv(P.pts.u.uCam, frame.pos);
+    gl.uniform3fv(P.pts.u.uCamVel, obsVel);
+    gl.uniform1f(P.pts.u.uCamGamma, obsGamma);
     gl.uniform1f(P.pts.u.uM, M);
     gl.uniform1f(P.pts.u.uPx, hdr.h);
     gl.uniform1f(P.pts.u.uShadowSin, Math.min(1, ((Math.sqrt(27) * M) / cam.dist) * camLapse));
@@ -642,6 +712,9 @@ function loop(now) {
     gl.useProgram(P.lines.p);
     gl.bindVertexArray(lineVao);
     gl.uniformMatrix4fv(P.lines.u.uViewProj, false, frame.viewProj);
+    gl.uniform3fv(P.lines.u.uCam, frame.pos);
+    gl.uniform3fv(P.lines.u.uCamVel, obsVel);
+    gl.uniform1f(P.lines.u.uCamGamma, obsGamma);
     gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     gl.drawArrays(gl.LINES, 0, lines.length / 7);
     gl.disable(gl.BLEND);
