@@ -1,6 +1,6 @@
 # Schwarzschild Lab
 
-**[Try it live →](https://zahintapadar.github.io/schwarzschild-lab/)** (needs a WebGL2 browser)
+**[Try it live →](https://zahintapadar.github.io/schwarzschild-lab/)** (needs a WebGL2 browser) · **[Read the devlog →](https://zahin-tapadar.vercel.app/blog/building-a-black-hole-simulator/)**
 
 A real-time black hole you can play with in the browser. A GPU ray tracer bends every pixel's light ray around a Schwarzschild black hole, while a Rust physics engine compiled to WebAssembly moves planets, stars and gas clouds along exact relativistic orbits.
 
