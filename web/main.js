@@ -1,6 +1,6 @@
 import {
   FULLSCREEN_VS, RAYTRACE_FS, DOWNSAMPLE_FS, UPSAMPLE_FS, COMPOSITE_FS,
-  POINTS_VS, POINTS_FS, LINES_VS, LINES_FS,
+  POINTS_VS, POINTS_FS, LINES_VS, LINES_FS, GALACTIC_CENTRE, GALACTIC_EAST, GALACTIC_POLE,
 } from './shaders.js';
 
 const $ = (s) => document.querySelector(s);
@@ -156,6 +156,7 @@ const params = {
   trails: true, fabric: false, fabricDepth: 0.55, fabricOffset: 4, fabricMassExag: 250,
   spawnType: 'planet', spawnMass: 0.002, vFactor: 1, incl: 0, cloudN: 3000,
   camMotion: 'orbit', orbitSpeed: 1, bob: true, ambientGas: true, gasCount: 2500,
+  spaceSeed: 1977, deepSky: 1, starDensity: 1, magLimit: 11, dust: 1, nebulae: 1, galaxies: 1, skyDebug: '0',
 };
 const cam = { yaw: 0, pitch: 0.055, dist: 36, tyaw: 0, tpitch: 0.055, tdist: 36, bob: 0 };
 
@@ -227,8 +228,28 @@ check(s, 'autoRes', 'Adaptive resolution (target 50 fps)');
 slider(s, 'exposure', 'Exposure', 0.1, 5, 0.05);
 slider(s, 'bloom', 'Bloom', 0, 2, 0.01);
 slider(s, 'bloomThreshold', 'Bloom thresh.', 0, 5, 0.05);
-slider(s, 'stars', 'Stars', 0, 3, 0.05);
-slider(s, 'nebula', 'Galaxy', 0, 3, 0.05);
+s = section('Synthetic sky', true);
+{
+  // the realisation seed: picks one stochastic draw from the same population model
+  const row = document.createElement('div'); row.className = 'row'; row.style.gridTemplateColumns = '96px 1fr auto';
+  row.innerHTML = `<label>Universe seed</label><input type="number" min="0" max="999999" step="1"><button>New universe</button>`;
+  const inp = row.querySelector('input'), btn = row.querySelector('button');
+  inp.style.cssText = 'width:100%;background:#1f1e22;color:inherit;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font:inherit';
+  btn.style.padding = '4px 6px';
+  const sync = () => { inp.value = params.spaceSeed; };
+  inp.addEventListener('change', () => { params.spaceSeed = Math.max(0, Math.min(999999, Math.round(+inp.value) || 0)); sync(); });
+  btn.onclick = () => { params.spaceSeed = Math.floor(Math.random() * 1000000); sync(); };
+  s.appendChild(row); sync(); ui.spaceSeed = sync;
+}
+slider(s, 'deepSky', 'Sky intensity', 0, 3, 0.05);
+slider(s, 'magLimit', 'Star mag. limit', 4, 12.5, 0.1);
+slider(s, 'starDensity', 'Star density', 0, 3, 0.05);
+slider(s, 'stars', 'Star brightness', 0, 3, 0.05);
+slider(s, 'nebula', 'Milky Way glow', 0, 3, 0.05);
+slider(s, 'dust', 'Dust extinction', 0, 3, 0.05);
+slider(s, 'nebulae', 'Nebulae', 0, 3, 0.05);
+slider(s, 'galaxies', 'Galaxy density', 0, 5, 0.05);
+select(s, 'skyDebug', 'Debug view', [['0', 'Final radiance'], ['1', 'Population density'], ['2', 'Extinction A_V'], ['3', 'Star-count expectation'], ['4', 'Nebula conditions'], ['5', 'Galaxy density field']]);
 s = section('Physics', true);
 slider(s, 'timeScale', 'Speed (M/s)', 0, 200, 0.5);
 check(s, 'paused', 'Paused (space)');
@@ -327,12 +348,34 @@ const PRESETS = {
     spawnPolar(28, 125, { type: 'planet', vFactor: 0.9, incl: 0, mass: 0.002 });
     spawnPolar(36, 250, { type: 'planet', vFactor: 1.0, incl: 0, mass: 0.01 });
   },
+  // Look past the hole just south of the model's Galactic centre (a property
+  // of the density model, not of any generated object): the bulge starlight
+  // and dust lane behind the shadow are bent into Einstein arcs by the geodesics.
+  'Lensed synthetic sky': () => {
+    const D = norm(GALACTIC_CENTRE.map((x, i) => x + 0.05 * GALACTIC_EAST[i] - 0.08 * GALACTIC_POLE[i]));
+    Object.assign(params, { spaceSeed: LENSED_SEED, showDisk: false, camMotion: 'static', fov: 55, exposure: 1.3, doppler: 0 });
+    Object.assign(cam, { tyaw: Math.atan2(-D[0], -D[2]), tpitch: Math.asin(-D[1]), tdist: 40 });
+  },
 };
+// Settings the sky preset overrides; any other preset puts them back.
+const LENSED_SEED = 1977;
+const SKY_PRESET_KEYS = ['spaceSeed', 'showDisk', 'camMotion', 'fov', 'exposure', 'doppler'];
+let skyPresetSaved = null;
+function applyPreset(name) {
+  if (name === 'Lensed synthetic sky') {
+    if (!skyPresetSaved) skyPresetSaved = Object.fromEntries(SKY_PRESET_KEYS.map((k) => [k, params[k]]));
+  } else if (skyPresetSaved) {
+    Object.assign(params, skyPresetSaved);
+    skyPresetSaved = null;
+  }
+  PRESETS[name]();
+  E.set_mass(params.M); syncFlags(); syncAll();
+}
 {
   const box = $('#presets');
-  for (const [name, fn] of Object.entries(PRESETS)) {
+  for (const name of Object.keys(PRESETS)) {
     const b = document.createElement('button'); b.textContent = name;
-    b.onclick = () => { fn(); E.set_mass(params.M); syncFlags(); syncAll(); };
+    b.onclick = () => applyPreset(name);
     box.appendChild(b);
   }
 }
@@ -518,6 +561,7 @@ function feedGas(have, M) {
 
 // -------------------------------------------------------------- loop ---
 let bodies = [];
+let gasCount = 0;
 let simT = 0, last = performance.now(), fpsAcc = 0, fpsN = 0, fps = 60, resTimer = 0;
 const bodyU = new Float32Array(64), bodyC = new Float32Array(64), bodyA = new Float32Array(64);
 
@@ -556,6 +600,9 @@ function loop(now) {
     E.step(h);
     simT += h;
   }
+  // replenish gas before packing: spawning can grow WASM memory, which would
+  // detach the packed-buffer view used for this frame's upload
+  if (params.ambientGas) feedGas(gasCount, E.get_mass());
   const n = E.pack();
   const buf = new Float32Array(E.memory.buffer, E.out_ptr(), n * STRIDE);
   bodies = [];
@@ -567,6 +614,7 @@ function loop(now) {
       bodies.push({ id, p: [buf[o], buf[o + 1], buf[o + 2]], radius: buf[o + 3], rate: buf[o + 5], col: buf[o + 6], m: 0, star: bodyMeta.get(id)?.star });
     } else { debris++; if (buf[o + 6] > 1.5) debrisGas++; }
   }
+  gasCount = debrisGas;
   // masses (for fabric wells) come from the UI metadata stored at spawn
   for (const b of bodies) b.m = bodyMeta.get(b.id)?.mass ?? 0;
   const M = E.get_mass();
@@ -587,7 +635,6 @@ function loop(now) {
     cam.yaw += 0.03 * dt; cam.tyaw += 0.03 * dt;
   }
   cam.bob = params.bob && params.camMotion !== 'static' ? 0.035 * Math.sin(now * 0.00012) + 0.015 * Math.sin(now * 0.00031) : 0;
-  if (params.ambientGas) feedGas(debrisGas, M);
 
   cam.yaw += (cam.tyaw - cam.yaw) * Math.min(1, dt * 8);
   cam.pitch += (cam.tpitch - cam.pitch) * Math.min(1, dt * 8);
@@ -630,6 +677,14 @@ function loop(now) {
   gl.uniform1f(R.u.uCamGamma, obsGamma);
   gl.uniform1f(R.u.uStars, params.stars);
   gl.uniform1f(R.u.uNebula, params.nebula);
+  gl.uniform1f(R.u.uDeepSky, params.deepSky);
+  gl.uniform1f(R.u.uStarDensity, params.starDensity);
+  gl.uniform1f(R.u.uNebulae, params.nebulae);
+  gl.uniform1f(R.u.uGalaxies, params.galaxies);
+  gl.uniform1f(R.u.uSpaceSeed, params.spaceSeed);
+  gl.uniform1f(R.u.uMagLimit, params.magLimit);
+  gl.uniform1f(R.u.uDust, params.dust);
+  gl.uniform1i(R.u.uSkyDebug, parseInt(params.skyDebug, 10) || 0);
   gl.uniform1i(R.u.uNB, nb);
   if (R.u.uBody) gl.uniform4fv(R.u.uBody, bodyU);
   if (R.u.uBodyCol) gl.uniform4fv(R.u.uBodyCol, bodyC);
@@ -755,8 +810,19 @@ function hud(M, nb, nd, camLapse) {
 
 syncFlags();
 E.set_mass(params.M);
+// Reproducible views from the URL: ?preset=<name>, any params key
+// (e.g. &showDisk=0&spaceSeed=42) and camera &yaw=&pitch=&dist= (radians, M).
 {
-  const q = new URLSearchParams(location.search).get('preset');
-  if (q && PRESETS[q]) { PRESETS[q](); E.set_mass(params.M); syncFlags(); syncAll(); cam.yaw = cam.tyaw; cam.pitch = cam.tpitch; cam.dist = cam.tdist; }
+  const qs = new URLSearchParams(location.search);
+  const q = qs.get('preset');
+  if (q && PRESETS[q]) applyPreset(q);
+  for (const [k, v] of qs) {
+    if (!(k in params)) continue;
+    const cur = params[k];
+    params[k] = typeof cur === 'boolean' ? v === '1' || v === 'true' : typeof cur === 'number' ? +v : v;
+  }
+  for (const k of ['yaw', 'pitch', 'dist']) if (qs.has(k)) cam['t' + k] = +qs.get(k);
+  cam.yaw = cam.tyaw; cam.pitch = cam.tpitch; cam.dist = cam.tdist;
+  E.set_mass(params.M); syncFlags(); syncAll();
 }
 requestAnimationFrame(loop);
