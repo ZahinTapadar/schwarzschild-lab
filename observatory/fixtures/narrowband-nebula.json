@@ -1,0 +1,15 @@
+{
+  "capture_fraction": 0.00001220703125,
+  "clipped": 0,
+  "diagnostic": "tau",
+  "disk_fraction": 0,
+  "failed": 0,
+  "height": 80,
+  "mode": "telescope",
+  "preset": "narrowband-nebula",
+  "saturated": 0,
+  "spp": 8,
+  "star_density_deg2": 176.7841051377926,
+  "volume_fraction": 0.38740234375,
+  "width": 128
+}

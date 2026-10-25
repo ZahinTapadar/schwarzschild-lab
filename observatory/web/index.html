@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schwarzschild Observatory</title>
+<meta name="description" content="A progressive synthetic telescope around a Schwarzschild black hole: adaptive null geodesics, spectral transport, a generated nebula volume and a simulated sensor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #07090c; --panel: #0e1217; --panel2: #121820; --line: #1f2731; --line2: #2a3441;
+    --text: #d8dee6; --muted: #7d8896; --dim: #4f5a67; --accent: #5fd4c4; --accent2: #f2b84b; --err: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 13px/1.45 'IBM Plex Sans', system-ui, sans-serif; }
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  #app { display: grid; grid-template-columns: 1fr 340px; height: 100vh; }
+  #view { position: relative; display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--line); }
+  header { display: flex; align-items: baseline; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .02em; }
+  header .tag { color: var(--muted); font-size: 12px; }
+  header a { color: var(--muted); margin-left: auto; font-size: 12px; text-decoration: none; }
+  header a:hover { color: var(--accent); }
+  #stage { flex: 1; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #0b0f14 0%, #050608 70%); }
+  canvas { max-width: 100%; max-height: 100%; image-rendering: auto; box-shadow: 0 0 0 1px var(--line); background: #000; }
+  #status { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; border-top: 1px solid var(--line); background: var(--panel); }
+  #status div { padding: 8px 14px; border-right: 1px solid var(--line); }
+  #status div:last-child { border-right: 0; }
+  #status label { display: block; color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+  #status b { font: 500 13px 'IBM Plex Mono', monospace; color: var(--text); }
+  #state b { color: var(--accent); }
+  #state.paused b { color: var(--accent2); }
+  #state.busy b { color: var(--muted); }
+  #notice, #scale { padding: 6px 14px; color: var(--dim); font-size: 11px; border-top: 1px solid var(--line); }
+  #scale b { color: var(--muted); font-weight: 500; }
+  #legend { padding: 8px 14px 10px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
+  #legend .badge { display: inline-block; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line2); border-radius: 3px; padding: 1px 6px; color: var(--muted); }
+  #legend .badge.diagnostic { border-color: #6a4bd1; color: #c9b8ff; }
+  #legend .badge.false { border-color: #b9842a; color: var(--accent2); }
+  #legend .keys { font-family: 'IBM Plex Mono', monospace; color: var(--dim); }
+  #legend .lt { margin-top: 6px; color: var(--text); }
+  #legend .cats { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 5px; }
+  #legend .cats i { display: inline-block; width: 11px; height: 9px; margin-right: 5px; border: 1px solid var(--line2); vertical-align: -1px; }
+  #legend .ramp { height: 9px; margin-top: 6px; border: 1px solid var(--line2); }
+  #legend .ticks { position: relative; height: 14px; font-family: 'IBM Plex Mono', monospace; }
+  #legend .ticks span { position: absolute; transform: translateX(-50%); top: 2px; white-space: nowrap; }
+  #legend .ticks span:first-child { transform: none; }
+  #legend .ticks span:last-child { transform: translateX(-100%); }
+  #legend .ln { margin-top: 3px; color: var(--dim); }
+  aside { overflow-y: auto; background: var(--panel); }
+  .bar { display: flex; gap: 6px; padding: 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); z-index: 2; flex-wrap: wrap; }
+  button, select, input { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line2); border-radius: 4px; }
+  button { padding: 6px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: #123b37; border-color: #1f6f66; color: #c9fff6; }
+  button:disabled { opacity: .4; cursor: default; }
+  select { padding: 5px 6px; width: 100%; }
+  details { border-bottom: 1px solid var(--line); }
+  summary { padding: 10px 14px; cursor: pointer; font-weight: 500; color: var(--muted); user-select: none; list-style: none; }
+  summary::before { content: '▸ '; color: var(--dim); }
+  details[open] summary::before { content: '▾ '; }
+  details[open] summary { color: var(--text); }
+  .rows { padding: 0 14px 12px; }
+  .row { display: grid; grid-template-columns: 112px 1fr 64px; gap: 8px; align-items: center; margin: 6px 0; }
+  .row label { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row input[type=range] { width: 100%; accent-color: var(--accent); }
+  .row output { font: 12px 'IBM Plex Mono', monospace; text-align: right; color: var(--text); }
+  .row.wide { grid-template-columns: 112px 1fr; }
+  .chk { display: flex; gap: 8px; align-items: center; margin: 6px 0; color: var(--muted); font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chips button { padding: 3px 8px; font-size: 12px; }
+  .chips button.on { background: #123b37; border-color: #1f6f66; color: #c9fff6; }
+  .help { color: var(--dim); font-size: 11px; margin: 4px 0 0; }
+  .label { display: inline-block; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--line2); border-radius: 3px; padding: 0 4px; margin-left: 4px; color: var(--dim); }
+  .preset-desc { padding: 0 14px 12px; color: var(--muted); font-size: 12px; }
+  @media (max-width: 900px) {
+    #app { grid-template-columns: 1fr; grid-template-rows: auto auto; height: auto; }
+    #view { border-right: 0; }
+    #stage { min-height: 46vh; }
+    aside { max-height: none; }
+    #status { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="view">
+    <header>
+      <h1>Schwarzschild Observatory</h1>
+      <span class="tag">progressive synthetic telescope</span>
+      <a href="../">← real-time simulator</a>
+    </header>
+    <div id="stage"><canvas id="c" width="640" height="400"></canvas></div>
+    <div id="status">
+      <div id="state"><label>State</label><b>Loading</b></div>
+      <div><label>Samples / pixel</label><b id="s-spp">0</b></div>
+      <div><label>Exposure</label><b id="s-exp">0 s</b></div>
+      <div><label>Render noise (MC)</label><b id="s-mc">–</b></div>
+      <div><label>Sensor noise</label><b id="s-sn">–</b></div>
+      <div><label>Wall time</label><b id="s-wall">00:00</b></div>
+      <div><label>Throughput</label><b id="s-rate">–</b></div>
+      <div><label>Geodesic failures</label><b id="s-fail">–</b></div>
+      <div><label>Steps / ray</label><b id="s-steps">–</b></div>
+      <div><label>Volume samples / ray</label><b id="s-vol">–</b></div>
+      <div><label>WebAssembly memory</label><b id="s-mem">–</b></div>
+    </div>
+    <div id="legend"></div>
+    <div id="scale"></div>
+    <div id="notice">Synthetic instrument simulation of a statistically synthesized scene. Not a real observation.</div>
+  </section>
+  <aside>
+    <div class="bar">
+      <button id="run" class="primary">Start</button>
+      <button id="reset">Reset exposure</button>
+      <button id="save">Save checkpoint</button>
+      <label class="mono" style="display:contents"><button id="loadbtn">Resume…</button><input id="load" type="file" accept=".ckpt" hidden></label>
+    </div>
+    <details open><summary>Preset</summary>
+      <div class="rows"><select id="preset"></select></div>
+      <div class="preset-desc" id="preset-desc"></div>
+    </details>
+    <details open><summary>View <span class="label">display only</span></summary><div class="rows" id="g-view"></div></details>
+    <details><summary>Black hole &amp; camera <span class="label">re-renders</span></summary><div class="rows" id="g-geom"></div></details>
+    <details><summary>Accretion disk <span class="label">re-renders</span></summary><div class="rows" id="g-disk"></div></details>
+    <details><summary>Deep sky <span class="label">re-renders</span></summary><div class="rows" id="g-sky"></div></details>
+    <details><summary>Filters &amp; optics <span class="label">no re-render</span></summary><div class="rows" id="g-filt"></div></details>
+    <details><summary>Sensor <span class="label">no re-render</span></summary><div class="rows" id="g-sens"></div></details>
+    <details><summary>Render budget</summary><div class="rows" id="g-budget"></div></details>
+    <details open><summary>Export</summary>
+      <div class="rows">
+        <div class="chips" style="margin-top:6px">
+          <button data-exp="png">PNG (current view)</button>
+          <button data-exp="exr">EXR (linear HDR)</button>
+          <button data-exp="fits">FITS (electrons)</button>
+          <button data-exp="json">JSON metadata</button>
+        </div>
+        <p class="help">PNGs are labelled by class: presentation views carry the palette and stretch in their metadata; diagnostic views carry their legend. FITS is a standard primary HDU (BITPIX −32, one plane per filter, electrons). The browser EXR carries per-filter electrons, expected electrons, rates and linear true colour; the native CLI also writes the full 26-channel spectral cube.</p>
+      </div>
+    </details>
+  </aside>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

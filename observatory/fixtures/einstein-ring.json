@@ -1,0 +1,15 @@
+{
+  "capture_fraction": 0.00001220703125,
+  "clipped": 0,
+  "diagnostic": "tau",
+  "disk_fraction": 0,
+  "failed": 0,
+  "height": 80,
+  "mode": "telescope",
+  "preset": "einstein-ring",
+  "saturated": 0.00003255208333333333,
+  "spp": 8,
+  "star_density_deg2": 176.7841051377926,
+  "volume_fraction": 0.47900390625,
+  "width": 128
+}

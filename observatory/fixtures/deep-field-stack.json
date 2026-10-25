@@ -1,0 +1,15 @@
+{
+  "capture_fraction": 0.00001220703125,
+  "clipped": 0,
+  "diagnostic": "variance",
+  "disk_fraction": 0,
+  "failed": 0,
+  "height": 80,
+  "mode": "telescope",
+  "preset": "deep-field-stack",
+  "saturated": 0.0000244140625,
+  "spp": 8,
+  "star_density_deg2": 7083.0765378452315,
+  "volume_fraction": 0,
+  "width": 128
+}

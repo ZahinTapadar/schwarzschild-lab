@@ -1,0 +1,8 @@
+[package]
+name = "observatory-core"
+version = "0.1.0"
+edition = "2021"
+description = "Progressive synthetic-telescope renderer around a Schwarzschild black hole"
+
+[lib]
+path = "src/lib.rs"

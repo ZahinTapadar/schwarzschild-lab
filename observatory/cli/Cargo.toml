@@ -1,0 +1,11 @@
+[package]
+name = "observatory-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "observatory"
+path = "src/main.rs"
+
+[dependencies]
+observatory-core = { path = "../core" }

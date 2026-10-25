@@ -1,0 +1,15 @@
+{
+  "capture_fraction": 0.00111083984375,
+  "clipped": 0,
+  "diagnostic": "fate",
+  "disk_fraction": 0.0710205078125,
+  "failed": 0,
+  "height": 80,
+  "mode": "telescope",
+  "preset": "first-light-hdr",
+  "saturated": 0,
+  "spp": 8,
+  "star_density_deg2": 506.32462532540455,
+  "volume_fraction": 0,
+  "width": 128
+}
