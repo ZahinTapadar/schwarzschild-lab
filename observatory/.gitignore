@@ -1,0 +1,6 @@
+target/
+*.ckpt
+out/
+web/observatory.wasm
+web/presets/
+web/volumes/

@@ -1,0 +1,36 @@
+{
+  "name": "Validation — finite source",
+  "mode": "telescope",
+  "notes": "Calibration source: a uniform disc (right half twice as bright) at infinity behind a point lens seen from r0 = 1e4 M (θ_E = 68.8′). Offsets are set with --set source_offset_arcmin=[x,0].",
+  "seed": 1977,
+  "bh_mass_msun": 4300000.0,
+  "bh_distance_pc": 0.0020577287591862633,
+  "cam_incl_deg": 75,
+  "cam_azimuth_deg": 0,
+  "fov_deg": 4.583662361046586,
+  "width": 256,
+  "height": 256,
+  "disk": false,
+  "rtol": 1e-09,
+  "sky_mode": "disc",
+  "disc_radius_deg": 0.17188733853924698,
+  "grid_radiance": 10000000000.0,
+  "source_offset_arcmin": [
+    0,
+    0
+  ],
+  "filters": [
+    "L"
+  ],
+  "exposure_s": 1,
+  "target_spp": 16,
+  "sensor_noise": false,
+  "psf": false,
+  "full_well_e": 1e+30,
+  "aperture_m": 0.1,
+  "pixel_um": 9,
+  "display": {
+    "white_pct": 0.9999,
+    "soft": 0.5
+  }
+}

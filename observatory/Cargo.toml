@@ -1,0 +1,15 @@
+# Schwarzschild Observatory: a progressive synthetic telescope.
+# Separate from the real-time simulator in ../engine and ../web, which it
+# does not touch. No third-party crates: every format and solver is in-tree.
+[workspace]
+members = ["core", "cli", "wasm"]
+resolver = "2"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+debug = false
+
+[profile.test]
+opt-level = 3

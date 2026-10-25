@@ -1,0 +1,60 @@
+{
+  "read_noise_e": 0,
+  "dark_e_per_s": 0,
+  "full_well_e": 1e+30,
+  "gain_e_per_adu": 1.0,
+  "psf": false,
+  "sensor_noise": false,
+  "shutter_open": true,
+  "halo_fraction": 0.01,
+  "cosmic_rays_per_cm2_s": 0,
+  "name": "Critical Curve Study — Local Observer",
+  "mode": "local",
+  "notes": "LOCAL OBSERVER, not a telescope image: a theoretical camera 30 M from the hole, used to validate the geodesics. A calibration grid at infinity (10° spacing, quadrant tints so mirror images are recognisable, point markers at intersections) and a thin disk from 6 to 16 M. Ideal detector: no sensor noise, no PSF, no full-well limit. Read it through the fate, winding, parity, invariant and steps diagnostics; the radiance view is a check, not a picture.",
+  "seed": 1977,
+  "bh_mass_msun": 4300000.0,
+  "cam_r": 30,
+  "cam_incl_deg": 80,
+  "cam_azimuth_deg": 0,
+  "fov_deg": 44,
+  "disk": true,
+  "disk_r_in": 6,
+  "disk_r_out": 16,
+  "disk_eddington_ratio": 0.01,
+  "disk_color_correction": 1.7,
+  "disk_tau": 0,
+  "disk_max_order": 3,
+  "rtol": 1e-10,
+  "max_windings": 8,
+  "sky_mode": "grid",
+  "grid_spacing_deg": 10,
+  "grid_radiance": 2e+24,
+  "aperture_m": 0.1,
+  "pixel_um": 9,
+  "filters": [
+    "L"
+  ],
+  "exposure_s": 1.0,
+  "checks": {
+    "max_saturated": 0.0,
+    "max_failed": 0.001,
+    "disk_fraction": [
+      0.45,
+      0.7
+    ],
+    "capture_fraction": [
+      0.12,
+      0.17
+    ]
+  },
+  "optics_fwhm_arcsec": 2.0,
+  "output_class": "presentation",
+  "presentation_mode": "diagnostic",
+  "render_width": 1280,
+  "render_height": 800,
+  "samples_per_pixel_target": 64,
+  "display_transform": "asinh",
+  "display_softness": 0.3,
+  "white_point_percentile": 0.999,
+  "black_point_percentile": 0.0
+}

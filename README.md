@@ -85,6 +85,12 @@ The **Lensed synthetic sky** preset sets seed 1977 and aims just south of the mo
 - Large-scale structure is a lognormal field on the sphere, not the result of gravitational evolution.
 - There are no Local Group objects (no Andromeda or Magellanic Clouds), so prominent galaxies are rare.
 
+## Schwarzschild Observatory
+
+**[Open the Observatory →](https://zahintapadar.github.io/schwarzschild-lab/observatory/)** · [technical write-up](observatory/README.md)
+
+A separate, slow sibling of the real-time simulator: a progressive synthetic telescope. Its scenes have physical scale. The hole has a mass in solar masses and a distance in parsecs, so the shadow, the disk and the Einstein radius have definite angular sizes on the detector, and the disk's brightness follows from its accretion rate. A separate local-observer mode is used only for geodesic and critical-curve validation. Instead of one ray per pixel per frame, it accumulates thousands of samples per pixel. Each sample goes through an adaptive Dormand–Prince geodesic integrator and carries the light as a 26-channel spectrum (20 continuum bins and 6 emission lines). The renderer lenses a generated 3D nebula placed at a finite distance behind the hole, then simulates the camera that records it: filters, quantum efficiency, ND filter, PSF, Poisson shot noise, read noise and saturation. Diagnostics (ray fate, parity, winding, redshift, optical depth) are kept apart from presentation images and carry legends and fixed scales. It exports PNG, linear OpenEXR and standard FITS with full metadata. It lives in [`observatory/`](observatory/) and does not touch the real-time code.
+
 ## Run it
 
 ```sh

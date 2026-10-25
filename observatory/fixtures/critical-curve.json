@@ -1,0 +1,15 @@
+{
+  "capture_fraction": 0.14234619140625,
+  "clipped": 0.0015625,
+  "diagnostic": "fate",
+  "disk_fraction": 0.5687255859375,
+  "failed": 0,
+  "height": 80,
+  "mode": "local",
+  "preset": "critical-curve",
+  "saturated": 0,
+  "spp": 8,
+  "star_density_deg2": 0,
+  "volume_fraction": 0,
+  "width": 128
+}
