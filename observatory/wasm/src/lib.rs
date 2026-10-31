@@ -17,11 +17,13 @@ use observatory_core::sensor::{self, DisplayParams, Frame, Instrument, Readout};
 use observatory_core::spectrum::NCH;
 use observatory_core::volume::Volume;
 
+mod survey;
+
 static mut OUT: Vec<u8> = Vec::new();
 static mut LOG: String = String::new();
 
 #[allow(static_mut_refs)]
-fn set_out(b: Vec<u8>) { unsafe { OUT = b; } }
+pub(crate) fn set_out(b: Vec<u8>) { unsafe { OUT = b; } }
 
 #[no_mangle]
 pub extern "C" fn alloc(n: usize) -> *mut u8 {
@@ -44,8 +46,8 @@ pub extern "C" fn out_len() -> usize { unsafe { OUT.len() } }
 #[allow(static_mut_refs)]
 pub extern "C" fn log_to_out() { unsafe { set_out(LOG.as_bytes().to_vec()); LOG.clear(); } }
 
-unsafe fn bytes<'a>(p: *const u8, n: usize) -> &'a [u8] { std::slice::from_raw_parts(p, n) }
-unsafe fn string(p: *const u8, n: usize) -> String { String::from_utf8_lossy(bytes(p, n)).into_owned() }
+pub(crate) unsafe fn bytes<'a>(p: *const u8, n: usize) -> &'a [u8] { std::slice::from_raw_parts(p, n) }
+pub(crate) unsafe fn string(p: *const u8, n: usize) -> String { String::from_utf8_lossy(bytes(p, n)).into_owned() }
 
 // ------------------------------------------------------------- worker --
 struct Worker {

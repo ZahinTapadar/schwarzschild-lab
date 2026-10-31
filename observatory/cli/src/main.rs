@@ -14,6 +14,7 @@ use std::time::Instant;
 
 mod fixtures;
 mod photometry;
+mod survey;
 mod render_cmd;
 
 fn arg<T: std::str::FromStr>(args: &[String], name: &str, default: T) -> T {
@@ -31,6 +32,7 @@ fn main() {
         Some("inspect") => cmd_inspect(&args),
         Some("fixtures") => fixtures::run(&args),
         Some("photometry") => photometry::run(&args),
+        Some("survey") => survey::run(&args),
         _ => {
             eprintln!("usage: observatory volume|render|resume ...  (see source header)");
             std::process::exit(2);

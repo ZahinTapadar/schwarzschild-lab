@@ -91,6 +91,8 @@ The **Lensed synthetic sky** preset sets seed 1977 and aims just south of the mo
 
 A separate, slow sibling of the real-time simulator: a progressive synthetic telescope. Its scenes have physical scale. The hole has a mass in solar masses and a distance in parsecs, so the shadow, the disk and the Einstein radius have definite angular sizes on the detector, and the disk's brightness follows from its accretion rate. A separate local-observer mode is used only for geodesic and critical-curve validation. Instead of one ray per pixel per frame, it accumulates thousands of samples per pixel. Each sample goes through an adaptive Dormand–Prince geodesic integrator and carries the light as a 26-channel spectrum (20 continuum bins and 6 emission lines). The renderer lenses a generated 3D nebula placed at a finite distance behind the hole, then simulates the camera that records it: filters, quantum efficiency, ND filter, PSF, Poisson shot noise, read noise and saturation. Diagnostics (ray fate, parity, winding, redshift, optical depth) are kept apart from presentation images and carry legends and fixed scales. It exports PNG, linear OpenEXR and standard FITS with full metadata. It lives in [`observatory/`](observatory/) and does not touch the real-time code.
 
+Its **[Multiwavelength Survey](https://zahintapadar.github.io/schwarzschild-lab/observatory/survey.html)** observes generated objects where no single band tells the story: pillars eroded by a young cluster, and a supercluster with a merging cluster at its core. Optical, near- and mid-infrared, 850 µm, radio, X-ray, CMB/SZ and weak-lensing instruments each compute their own emission and absorption from the same physical state ([details](observatory/README.md#multiwavelength-survey)).
+
 ## Run it
 
 ```sh

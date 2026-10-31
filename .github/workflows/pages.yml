@@ -32,8 +32,10 @@ jobs:
       - name: Build Schwarzschild Observatory to WebAssembly (served at /observatory/)
         run: |
           cargo build --release --target wasm32-unknown-unknown --manifest-path observatory/Cargo.toml -p observatory-wasm
-          mkdir -p web/observatory/presets web/observatory/volumes
+          mkdir -p web/observatory/presets/survey web/observatory/volumes
           cp observatory/web/index.html observatory/web/app.js observatory/web/worker.js web/observatory/
+          cp observatory/web/survey.html observatory/web/survey.js observatory/web/survey-worker.js web/observatory/
+          cp observatory/presets/survey/*.json web/observatory/presets/survey/
           cp observatory/target/wasm32-unknown-unknown/release/observatory_wasm.wasm web/observatory/observatory.wasm
           cp observatory/presets/*.json web/observatory/presets/
           cp observatory/volumes/*.obsvol web/observatory/volumes/

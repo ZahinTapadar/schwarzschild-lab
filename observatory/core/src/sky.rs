@@ -251,7 +251,7 @@ const MAG_EDGES: [f64; 13] = [-3.0, 1.5, 4.0, 6.5, 8.5, 10.5, 12.5, 14.0, 16.0, 
 /// Temperature and line-of-sight A_V of a star of apparent magnitude m drawn
 /// from line of sight l: pick the shell and population in proportion to
 /// their contribution at m, then a main-sequence or giant temperature.
-fn draw_star(l: &Los, m: f64, rng: &mut Rng) -> (f64, f64, f64) {
+pub(crate) fn draw_star(l: &Los, m: f64, rng: &mut Rng) -> (f64, f64, f64) {
     // which shell and population produced it
     let mut wts = [0.0; 2 * NSHELL];
     let mut sum = 0.0;

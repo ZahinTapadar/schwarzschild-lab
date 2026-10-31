@@ -192,7 +192,7 @@ fn gauss_blur(img: &[f32], w: usize, h: usize, sigma: f64) -> Vec<f32> {
 }
 
 // ------------------------------------------------------------- FFT --
-fn fft(re: &mut [f64], im: &mut [f64], inverse: bool) {
+pub(crate) fn fft(re: &mut [f64], im: &mut [f64], inverse: bool) {
     let n = re.len();
     let mut j = 0;
     for i in 1..n {
@@ -234,7 +234,7 @@ fn fft2(re: &mut [f64], im: &mut [f64], w: usize, h: usize, inverse: bool) {
 }
 
 /// Linear (zero-padded) convolution of img with a centred kernel of radius r, via FFT.
-fn fft_convolve(img: &[f32], w: usize, h: usize, k: &[f32], r: i64) -> Vec<f32> {
+pub(crate) fn fft_convolve(img: &[f32], w: usize, h: usize, k: &[f32], r: i64) -> Vec<f32> {
     let pw = (w + 2 * r as usize).next_power_of_two();
     let ph = (h + 2 * r as usize).next_power_of_two();
     let n = (2 * r + 1) as usize;

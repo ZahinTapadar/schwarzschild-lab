@@ -1,0 +1,144 @@
+{
+  "title": "Cluster Core: Multiwavelength",
+  "description": "The merging cluster at the heart of the same supercluster, 1.6 degrees across (5.6 Mpc at z = 0.047): galaxies in g/r/i and the infrared, hot gas in X-rays, a radio halo and two relics, the SZ shadow and the lensing mass.",
+  "scene": {
+    "generator": "supercluster",
+    "seed": 12,
+    "grid": 128,
+    "box_mpc": 120,
+    "distance_mpc": 200,
+    "h": 0.7,
+    "omega_m": 0.3,
+    "omega_b": 0.048,
+    "sigma8": 0.81,
+    "n_s": 0.965,
+    "peak_nu": 3.2,
+    "peak_r_mpc": 10,
+    "tza_factor": 1.0,
+    "galaxy_density_mpc3": 0.015,
+    "mstar_min": 5000000000.0,
+    "foreground_av": 0.08
+  },
+  "view": {
+    "width": 1024,
+    "height": 640,
+    "fov_deg": 1.6,
+    "target": "halo0"
+  },
+  "spp": 2,
+  "instruments": [
+    "optical_gri",
+    "wise",
+    "xray_deep",
+    "radio_deep",
+    "cmb",
+    "lensing"
+  ],
+  "overrides": {
+    "lensing": {
+      "smooth_arcmin": 1.0,
+      "n_gal": 30
+    },
+    "xray_deep": {
+      "exposure_s": 100000
+    }
+  },
+  "stretch": {
+    "soft": 0.05,
+    "lo": 1.0,
+    "hi": 99.8
+  },
+  "stretch_xray_survey": {
+    "smooth": 1.0,
+    "lo": 5.0,
+    "hi": 99.95
+  },
+  "cross": [
+    {
+      "name": "bullet-style",
+      "title": "galaxies, hot gas, radio and mass",
+      "note": "Optical r (white) shows the galaxies; X-rays (magenta, log counts) the hot gas between them; 1.28 GHz (orange) the radio halo, relics and radio galaxies; lensing convergence (blue) the mass, most of it dark.",
+      "layers": [
+        {
+          "instrument": "optical_gri",
+          "band": 1,
+          "colour": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "soft": 0.02,
+          "lo": 50.0,
+          "hi": 99.95
+        },
+        {
+          "instrument": "xray_deep",
+          "band": 0,
+          "colour": [
+            1.0,
+            0.2,
+            0.8
+          ],
+          "log": true,
+          "smooth": 3.0,
+          "lo": 20.0,
+          "hi": 99.9
+        },
+        {
+          "instrument": "radio_deep",
+          "band": 0,
+          "colour": [
+            1.0,
+            0.55,
+            0.1
+          ],
+          "soft": 0.05,
+          "lo": 70.0,
+          "hi": 99.8
+        },
+        {
+          "instrument": "lensing",
+          "band": 0,
+          "colour": [
+            0.2,
+            0.5,
+            1.0
+          ],
+          "lo": 93.0,
+          "hi": 99.95
+        }
+      ]
+    }
+  ],
+  "stretch_xray_deep": {
+    "smooth": 2.0,
+    "lo": 5.0,
+    "hi": 99.95
+  },
+  "stretch_optical_gri": {
+    "soft": 0.02,
+    "lo": 50.0,
+    "hi": 99.95,
+    "shared": true
+  },
+  "stretch_wise": {
+    "soft": 0.03,
+    "lo": 50.0,
+    "hi": 99.95,
+    "smooth": 0.7
+  },
+  "stretch_radio_deep": {
+    "soft": 0.05,
+    "lo": 50.0,
+    "hi": 99.9
+  },
+  "foreground_stars": {
+    "gal_l_deg": 312.0,
+    "gal_b_deg": 30.0,
+    "v_limit": 23.0
+  },
+  "stretch_cmb": {
+    "smooth": 4.0,
+    "hi": 99.5
+  }
+}
