@@ -1,0 +1,112 @@
+{
+  "title": "Supercluster: Multiwavelength",
+  "description": "A 120 Mpc box of a constrained LCDM realisation 200 Mpc away (z = 0.047): clusters, filaments of warm-hot gas, galaxies and radio sources, seen across 40 degrees of sky. Generated, not a map of any real supercluster.",
+  "scene": {
+    "generator": "supercluster",
+    "seed": 12,
+    "grid": 128,
+    "box_mpc": 120,
+    "distance_mpc": 200,
+    "h": 0.7,
+    "omega_m": 0.3,
+    "omega_b": 0.048,
+    "sigma8": 0.81,
+    "n_s": 0.965,
+    "peak_nu": 3.2,
+    "peak_r_mpc": 10,
+    "tza_factor": 1.0,
+    "galaxy_density_mpc3": 0.015,
+    "mstar_min": 5000000000.0,
+    "foreground_av": 0.08
+  },
+  "view": {
+    "width": 1024,
+    "height": 640,
+    "fov_deg": 40
+  },
+  "spp": 2,
+  "instruments": [
+    "xray_survey",
+    "cmb",
+    "radio_survey",
+    "lensing"
+  ],
+  "overrides": {
+    "lensing": {
+      "smooth_arcmin": 8.0,
+      "n_gal": 10
+    }
+  },
+  "stretch": {
+    "soft": 0.05,
+    "lo": 1.0,
+    "hi": 99.8
+  },
+  "stretch_xray_survey": {
+    "smooth": 1.0,
+    "lo": 5.0,
+    "hi": 99.95
+  },
+  "wedge": {
+    "half_dec_deg": 4.0,
+    "mstar_min": 10000000000.0
+  },
+  "cross": [
+    {
+      "name": "gas-and-radio",
+      "title": "hot gas, SZ and radio",
+      "note": "X-rays (magenta, log counts), the 150 GHz SZ decrement (cyan; sign flipped and high-pass filtered at 6 px to remove the primary CMB) and 1.4 GHz radio (orange). Clusters show in all three; the filaments' warm-hot gas is below every survey's noise.",
+      "layers": [
+        {
+          "instrument": "xray_survey",
+          "band": 0,
+          "colour": [
+            1.0,
+            0.25,
+            0.85
+          ],
+          "log": true,
+          "smooth": 1.0,
+          "lo": 5.0,
+          "hi": 99.95
+        },
+        {
+          "instrument": "cmb",
+          "band": 1,
+          "colour": [
+            0.1,
+            0.9,
+            1.0
+          ],
+          "negate": true,
+          "highpass_px": 6.0,
+          "smooth": 1.0,
+          "lo": 99.0,
+          "hi": 99.98,
+          "soft": 0.3
+        },
+        {
+          "instrument": "radio_survey",
+          "band": 0,
+          "colour": [
+            1.0,
+            0.55,
+            0.1
+          ],
+          "lo": 60.0,
+          "hi": 99.95,
+          "soft": 0.05
+        }
+      ]
+    }
+  ],
+  "stretch_radio_survey": {
+    "soft": 0.02,
+    "lo": 50.0,
+    "hi": 99.95
+  },
+  "stretch_cmb": {
+    "smooth": 1.0,
+    "hi": 99.5
+  }
+}

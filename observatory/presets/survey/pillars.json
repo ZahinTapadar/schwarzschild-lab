@@ -1,0 +1,144 @@
+{
+  "title": "Pillars: Multiwavelength",
+  "description": "A molecular cloud eroded by the ionising light of a young cluster into dense pillars with photoevaporating skins, embedded young stars and a hot wind-blown cavity, 1.74 kpc away. Eagle-Nebula-like, generated, not a map of M16.",
+  "scene": {
+    "generator": "pillars",
+    "seed": 16,
+    "grid": 128,
+    "box_pc": 6.4,
+    "distance_pc": 1740,
+    "gal_l_deg": 17.0,
+    "gal_b_deg": 0.8,
+    "foreground_av": 2.6,
+    "cluster_pc": [
+      1.4,
+      5.2,
+      1.6
+    ],
+    "cluster_q": 2e+50,
+    "cluster_lbol": 800000.0,
+    "cluster_teff": 40000,
+    "cloud_density": 7000,
+    "turbulence": 0.55,
+    "turbulence_slope": 4.0,
+    "turbulence_outer_pc": 3.0,
+    "cloud_top": 0.35,
+    "cores": 6,
+    "core_density": 150000.0,
+    "age_myr": 4.0,
+    "flow_scale_pc": 0.12,
+    "flow_speed_kms": 11,
+    "diffuse_fraction": 0.04,
+    "cavity_density": 80,
+    "ysos": 34,
+    "star_limit_v": 29,
+    "hot_density": 0.4
+  },
+  "view": {
+    "width": 1024,
+    "height": 640,
+    "fov_arcmin": 11.6,
+    "look_pc": [
+      0.0,
+      -0.4
+    ]
+  },
+  "spp": 4,
+  "instruments": [
+    "optical_narrow",
+    "nircam",
+    "miri",
+    "submm",
+    "radio_cm",
+    "xray_ccd"
+  ],
+  "stretch": {
+    "soft": 0.05,
+    "lo": 1.0,
+    "hi": 99.7
+  },
+  "cross": [
+    {
+      "name": "xray-optical-ir",
+      "title": "X-ray, H-alpha and near-infrared",
+      "note": "Soft X-rays (blue, log counts) fill the wind-blown cavity; H-alpha (green) outlines the ionised skins; F200W (red) sees the stars through the pillars.",
+      "layers": [
+        {
+          "instrument": "xray_ccd",
+          "band": 0,
+          "colour": [
+            0.25,
+            0.45,
+            1.0
+          ],
+          "log": true,
+          "smooth": 4.0
+        },
+        {
+          "instrument": "optical_narrow",
+          "band": 1,
+          "colour": [
+            0.2,
+            1.0,
+            0.35
+          ]
+        },
+        {
+          "instrument": "nircam",
+          "band": 2,
+          "colour": [
+            1.0,
+            0.45,
+            0.15
+          ]
+        }
+      ]
+    },
+    {
+      "name": "radio-submm",
+      "title": "Ionised gas and cold dust",
+      "note": "5 GHz free-free (cyan) traces every ionised surface regardless of dust; 850 um (orange) weighs the cold dust inside the pillars.",
+      "layers": [
+        {
+          "instrument": "radio_cm",
+          "band": 0,
+          "colour": [
+            0.1,
+            0.85,
+            1.0
+          ]
+        },
+        {
+          "instrument": "submm",
+          "band": 0,
+          "colour": [
+            1.0,
+            0.5,
+            0.1
+          ]
+        }
+      ]
+    }
+  ],
+  "stretch_optical_narrow": {
+    "shared": true,
+    "soft": 0.12,
+    "lo": 1.0,
+    "hi": 99.8
+  },
+  "stretch_xray_ccd": {
+    "smooth": 5.0,
+    "lo": 1.0,
+    "hi": 99.9
+  },
+  "stretch_miri": {
+    "soft": 0.25,
+    "lo": 1.0,
+    "hi": 99.9
+  },
+  "overrides": {
+    "xray_ccd": {
+      "exposure_s": 300000
+    }
+  }
+}

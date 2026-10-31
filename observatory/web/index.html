@@ -21,7 +21,8 @@
   header { display: flex; align-items: baseline; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
   header h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .02em; }
   header .tag { color: var(--muted); font-size: 12px; }
-  header a { color: var(--muted); margin-left: auto; font-size: 12px; text-decoration: none; }
+  header a { color: var(--muted); font-size: 12px; text-decoration: none; }
+  header a:first-of-type { margin-left: auto; }
   header a:hover { color: var(--accent); }
   #stage { flex: 1; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #0b0f14 0%, #050608 70%); }
   canvas { max-width: 100%; max-height: 100%; image-rendering: auto; box-shadow: 0 0 0 1px var(--line); background: #000; }
@@ -90,6 +91,7 @@
     <header>
       <h1>Schwarzschild Observatory</h1>
       <span class="tag">progressive synthetic telescope</span>
+      <a href="survey.html">multiwavelength survey →</a>
       <a href="../">← real-time simulator</a>
     </header>
     <div id="stage"><canvas id="c" width="640" height="400"></canvas></div>

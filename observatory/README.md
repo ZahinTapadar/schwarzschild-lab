@@ -360,6 +360,104 @@ It then compares each render with the stored fixture in `fixtures/` (2% L1 per p
 
 The transported quantity is **photon spectral radiance per unit wavelength**, N_λ (photons s⁻¹ m⁻² sr⁻¹ nm⁻¹), in 20 continuum bins of 30 nm from 360 to 960 nm. Six emission lines ride alongside as integrated radiance at their exact wavelengths: Hβ, [O III] 5007, Hα, [N II] 6583 and [S II] 6716/6731. *Physically derived:* N_λ,obs(λ) = g⁴ N_λ,emit(gλ); lines transform as g³ and move to λ_rest/g. Sky light reaching a static observer is blueshifted by 1/√(1 − 2/r₀), which is negligible in telescope mode. Filters (U, B, V, R, I; L, R, G, B; 5 nm Hα, [O III], [S II]) and a CMOS quantum-efficiency curve act on the spectrum before any colour conversion.
 
+## Multiwavelength Survey
+
+**[Open the survey in the browser →](https://zahintapadar.github.io/schwarzschild-lab/observatory/survey.html)** · CLI: `observatory survey presets/survey/<name>.json`
+
+![Pillars, the same field with six instruments: optical narrowband, near-infrared, mid-infrared, 850 µm, 5 GHz and X-rays.](docs/survey-pillars-montage.webp)
+
+The lensing scenes ask what one optical camera records near a black hole. The survey asks what *different instruments* record from the same object, and why they disagree. It lives in `core/src/mw/` and shares the Observatory's JSON, random numbers, Galactic star model, exporters and legend renderer, but not its geodesic integrator: none of these scenes is behind the hole.
+
+Two generated scenes, described by physical state (densities, temperatures, radiation fields, masses), never by colours:
+
+| Scene | What is generated | Scale |
+| --- | --- | --- |
+| **Pillars** | A molecular cloud eroded by a young cluster into pillars, with photoevaporating skins, embedded young stars, a hot wind-blown cavity and field stars | 6.4 pc box, 1.74 kpc away, 256³ cells (CLI) |
+| **Supercluster** | A constrained ΛCDM realisation: haloes, cluster atmospheres, warm–hot gas, 26,000 galaxies, radio galaxies, a merging cluster with a radio halo and relics, the CMB | 120 Mpc box at 200 Mpc (z = 0.047), 128³ |
+| **Cluster core** | The same supercluster, 1.6° around its merging cluster | 5.6 Mpc across |
+
+Every band computes its emissivity j_ν and absorption α_ν per cell from that state and integrates them along rays through the same volume with exact transfer for piecewise-constant j and α. Point and compact sources are attenuated by the same α along their own sightlines. Then each instrument applies its own PSF or beam, units and noise. No band is painted. If the infrared shows stars the optical hides, it is because the dust column along those rays is optically thin at 2 µm.
+
+### Pillars: how they form
+
+![Near-infrared composite (F090W, F187N, F200W, F335M, F444W in chromatic order): translucent pillars with background and embedded stars.](docs/survey-pillars-nircam.webp)
+
+1. **Cloud.** A lognormal turbulent field from a Gaussian random field with P(k) ∝ (k² + k₀²)^(−s/2), s = 4, below a rough surface, plus six dense Plummer cores (*statistically synthesized*).
+2. **Photoevaporation front.** A front facing Q ionising photons per second is shielded by its own outflow. Recombinations in the flow balance the flux at a base density n_IF = √(F/(α_B ℓ)) (Bertoldi 1989), and the front eats atoms at n_IF c_s per unit area. A cell is ionised if the cloud's column between it and the cluster is smaller than N_erode = n_IF c_s t (*physically derived* scaling; tested against a uniform cloud to 2.5 cells). Dense cores stop the front and shadow the gas behind them. That is how the pillars form, pointing at the cluster.
+3. **Diffuse field and compression.** Recombination photons erode a further 4% of N_erode from every surface (column-density sweeps), and the gas behind a lit front is compressed by up to 3× (*not mass-conserving*).
+4. **Ionised gas.** A tenuous cavity (80 cm⁻³) plus photoevaporation flows of density n_IF (ℓ/(ℓ + d))² off every surface. A 7 × 10⁶ K wind-shocked plasma fills the cavity away from the surfaces (*prescribed*).
+5. **Starlight and dust.** FUV intensity U from the cluster through the dust column plus a diffuse part. Big grains sit at T = 18 K U^(1/5.8); PAHs and small grains are destroyed in ionised gas.
+6. **Stars.** 34 young stellar objects in the dense heads (photosphere, warm envelope, coronal X-rays). Field stars are drawn from the Observatory's Galactic model toward l = 17°, b = 0.8°, with distances, so stars behind the cloud are extinguished by it.
+
+![Generated state through the box centre: hydrogen density, ionised fraction, starlight intensity, hot plasma.](docs/survey-pillars-state.webp)
+
+### What each band computes
+
+| Band(s) | Emission | Absorption |
+| --- | --- | --- |
+| Optical narrowband [O III], Hα, [S II] | Case-B recombination, α_eff(T) = 1.17e-13 T₄^−0.942 (*physically derived*); [O III], [N II], [S II] ratios from the ionisation parameter and front proximity (*empirical*); dust-scattered cluster light | Dust, A_λ/A_V for R_V = 3.1 |
+| Near-infrared (0.9–5 µm) | Paschen and Brackett lines (case-B ratios), H₂ 2.12 µm from the PDR, PAH 3.3 µm, scattered light, stars | Dust: A_2µm ≈ 0.11 A_V |
+| Mid-infrared (7.7–21 µm) | PAH features (Drude profiles, 1.2e-24 U erg s⁻¹ per H), stochastically heated small grains, equilibrium big grains | Dust incl. the 9.7 µm silicate feature |
+| 850 µm | Big grains, j = n σ_abs B_ν(T_d), σ pinned to τ₃₅₃/N_H = 1.2e-26 cm² | Same (optically thin) |
+| 5 GHz | Thermal free–free with Draine's Gaunt factor (*physically derived*) | Free–free (Kirchhoff) |
+| X-ray 0.5–7 keV | Bremsstrahlung plus a metal-line excess from a solar CIE cooling curve (*numerically approximated*); stellar coronae | Photoelectric, σ ≈ 2.0e-22 (E/keV)^−8/3 per H |
+| 90/150/220 GHz | Thermal SZ, ΔT/T = y (x coth(x/2) − 4), plus primary CMB (Gaussian field with a fitted D_ℓ) and sources | – |
+| Weak lensing | Born-approximation convergence from the particles, plus NFW cores in the cluster view; shape noise σ_e = 0.26 | – |
+
+Tests check each formula against its textbook limit: free–free brightness (Mezger & Henderson, 12%), Hα against emission measure, an optically thick dust slab radiating as a blackbody (5%), big grains balancing the ISRF at 18 K, the PAH template's integrated power, the 150 GHz SZ decrement factor −0.957, and a β-model cluster's central y against its analytic projection (3%).
+
+![H-alpha, F200W and F444W of the same field: the pillars grow translucent and stars appear inside and behind them.](docs/survey-pillars-dust.webp)
+
+The dust law is the whole story of the comparison above. A test checks that an embedded star's optical depth at 2 µm divided by its depth at Hα equals the dust law's ratio (15%). That is, every band sees the same dust column.
+
+![X-ray, H-alpha and near-infrared composite.](docs/survey-pillars-xray-optical-ir.webp)
+
+![5 GHz free-free and 850 µm cold dust.](docs/survey-pillars-radio-submm.webp)
+
+The radio and sub-millimetre views are the two that do not care about dust. Free–free emission shows every ionised surface, front or back. The 850 µm map weighs the cold dust and peaks on the dense cores that made the pillars. The 300 ks X-ray image is honest and sparse: about 0.09 counts per pixel of diffuse soft emission. The pillars appear in it as *shadows*, because 10²² cm⁻² of gas absorbs soft X-rays.
+
+### Supercluster and cluster core
+
+1. **Linear field.** BBKS transfer function with Sugiyama's baryon correction, σ₈ = 0.81, n_s = 0.965 (tested to 10⁻³). One peak of ν = 3.2 σ at R = 10 Mpc is imposed at the centre with the Hoffman–Ribak construction, which changes nothing else about the statistics.
+2. **Structure.** Particles are moved by the truncated Zel'dovich approximation, with the field smoothed at k_nl = 0.229 Mpc⁻¹, and velocities v = f H₀ ψ.
+3. **Haloes.** A peak-patch-like excursion set: from 20 Mpc down to 3.4 Mpc top-hats, every Lagrangian peak with δ > 1.686 not inside a larger halo collapses (608 haloes; the largest M₂₀₀ = 1.37 × 10¹⁵ M☉).
+4. **Gas.** β-model atmospheres with 12% of M₅₀₀ in gas, the Arnaud M–T relation and random ellipticity. The merging central cluster gets a quarter-mass subcluster 0.7 Mpc along the merger axis, a radio halo and two relics. Warm–hot gas follows the smoothed matter density.
+5. **Galaxies.** Centrals from the Moster et al. stellar-to-halo relation, satellites on NFW orbits, field galaxies on particles with bias (ρ/ρ̄)^0.6, quenching that depends on mass and environment, and radio AGN with lobes. Each has an SED from old and young stars, dust, PAHs and radio.
+
+![Cluster core: optical r (galaxies), X-rays (hot gas), 1.28 GHz (radio halo, relics, radio galaxies) and lensing convergence (mass).](docs/survey-cluster-bullet.webp)
+
+![Redshift-survey wedge: the same galaxies in real space and in redshift space, where the central cluster becomes a finger of god.](docs/survey-supercluster-wedge.webp)
+
+A supercluster is hard to see in projection and easy to see in redshift space, which is how real ones are found. Over 40° of sky the X-ray survey shows the clusters as points. The warm–hot gas between them is below every survey's noise, as it is in reality.
+
+![Lensing: noise-limited across 40 degrees, a clear mass peak around the cluster core.](docs/survey-lensing.webp)
+
+Weak lensing is the honest surprise. At z = 0.047 the lensing kernel is tiny. Across the wide field the peak convergence (0.005) is below twice the shape noise, and only the cluster-core view, with 30 galaxies per arcmin², recovers the mass (κ = 0.17 against 0.013 noise).
+
+### Running it and timing
+
+```sh
+./scripts/survey_captures.sh     # all three presets → out/survey/{presentation,diagnostics,data}
+./scripts/survey_docs.sh         # the figures above
+./target/release/observatory survey presets/survey/pillars.json --grid 128 --size 1024x640 --spp 2 --only nircam,miri
+```
+
+| Run (MacBook Air M4, 10 threads) | Time |
+| --- | --- |
+| Pillars, 256³, 1024 × 640, 2 spp, six instruments | 224 s (generation 13 s; 16–62 s per instrument) |
+| Supercluster, 128³, four instruments | 27 s |
+| Cluster core, six instruments | 67 s |
+| Browser: pillars, 64³, 512 × 320 | 16 s |
+| Browser: cluster core, 128³, 1024 × 640 | 51 s |
+
+The browser runs the same code with the same seeds. One worker generates the scene and composes the images, and the others ray-march rows of each instrument's band grids, so a browser render matches the CLI render of the same grid and size to float precision. Each band writes a FITS file with two planes (observed and noise-free) and a JSON sidecar with units, beam, exposure and noise. Each image is labelled `presentation` or `diagnostic` and `single_band`, `false_colour_composite` or `comparison_montage`.
+
+### What it gets right, and what it does not
+
+- **Right:** the reasons bands differ: dust columns, line physics, free–free, dust temperatures, photoelectric absorption, SZ spectra and lensing kernels, each tested against its limit. Real units, real beams, real noise.
+- **Approximate:** the pillars' front is a column criterion, not radiation hydrodynamics. Line ratios are empirical, dust is one grain mix with a fixed size distribution, scattering is single and isotropic, and the hot plasma is prescribed. Zel'dovich structure does not form bound haloes (the excursion set supplies them), cluster gas is spherical-ish β-models, and the galaxy SEDs are templates. There is no light-cone evolution across the box.
+- **Not a map:** neither scene is M16 or any real supercluster. They are generated to resemble the classes of objects.
+
 ## Measurements
 
 All numbers come from `scripts/captures.sh` (native CLI, 10 threads) on a **MacBook Air M4** (4 performance + 6 efficiency cores, 16 GB, fanless). The machine throttles under sustained load, so throughput varies by up to 2× between runs of the same scene. The image data are deterministic.
@@ -397,7 +495,7 @@ The renderer noise halves for every 4× samples (1/√N). The sensor noise stops
 
 **Reproducibility.** A 160 × 100 render to 64 spp in one go, and to 32 spp followed by a checkpoint resume to 64, give **bit-identical EXR files** (all radiance channels and sensor planes). `observatory fixtures` re-renders every preset at 128 px and compares it with the stored fixtures; all nine pass.
 
-**Tests.** `cargo test --release` runs 60 unit tests plus the preset fixture test, all passing. The unit tests cover:
+**Tests.** `cargo test --release` runs 78 unit tests (60 for the telescope, 18 for the multiwavelength survey) plus the preset fixture test, all passing. The unit tests cover:
 
 - geodesics and observer geometry;
 - point-lens checks of finite sources;
@@ -407,7 +505,8 @@ The renderer noise halves for every 4× samples (1/√N). The sensor noise stops
 - resolution invariance;
 - HDR merging over ten decades and stack noise ∝ 1/√N;
 - the sensor (Poisson statistics, linearity, PSF flux, dark frames, filters);
-- exporters, determinism and checkpoints.
+- exporters, determinism and checkpoints;
+- the survey's band physics against textbook limits, the pillar front depth, the shared dust column across bands, flux invariance with resolution, the σ₈ normalisation and comoving distances, and the supercluster generator.
 
 ## What it gets right
 

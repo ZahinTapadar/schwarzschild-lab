@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiwavelength Survey</title>
+<meta name="description" content="The Schwarzschild Observatory's multiwavelength survey: generated pillars and a supercluster observed in infrared, sub-millimetre, radio, X-ray, microwave and weak lensing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --bg: #07090c; --panel: #0e1217; --panel2: #121820; --line: #1f2731; --line2: #2a3441;
+    --text: #d8dee6; --muted: #7d8896; --dim: #4f5a67; --accent: #5fd4c4; --accent2: #f2b84b; --err: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 13px/1.45 'IBM Plex Sans', system-ui, sans-serif; }
+  #app { display: grid; grid-template-columns: 1fr 340px; height: 100vh; }
+  #view { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--line); }
+  header { display: flex; align-items: baseline; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .02em; }
+  header .tag { color: var(--muted); font-size: 12px; }
+  header a { color: var(--muted); font-size: 12px; text-decoration: none; }
+  header a:first-of-type { margin-left: auto; }
+  header a:hover { color: var(--accent); }
+  #stage { flex: 1; display: grid; place-items: center; overflow: auto; padding: 12px; background: radial-gradient(ellipse at center, #0b0f14 0%, #050608 70%); }
+  #stage img { max-width: 100%; max-height: calc(100vh - 230px); box-shadow: 0 0 0 1px var(--line); image-rendering: auto; }
+  #stage .empty { color: var(--muted); max-width: 460px; text-align: center; }
+  #strip { display: flex; gap: 8px; padding: 10px 12px; overflow-x: auto; border-top: 1px solid var(--line); background: var(--panel); min-height: 92px; }
+  #strip figure { margin: 0; flex: 0 0 auto; cursor: pointer; }
+  #strip img { height: 58px; display: block; border: 1px solid var(--line2); border-radius: 2px; }
+  #strip figure.on img { border-color: var(--accent); }
+  #strip figcaption { font: 11px 'IBM Plex Mono', monospace; color: var(--muted); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+  #notice { padding: 6px 14px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); }
+  aside { overflow-y: auto; background: var(--panel); }
+  .bar { display: flex; gap: 6px; padding: 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--panel); z-index: 2; flex-wrap: wrap; }
+  button, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line2); border-radius: 4px; }
+  button { padding: 6px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: #123b37; border-color: #1f6f66; color: #c9fff6; }
+  button:disabled { opacity: .4; cursor: default; }
+  select { padding: 5px 6px; width: 100%; }
+  section.box { border-bottom: 1px solid var(--line); padding: 10px 14px 12px; }
+  section.box h2 { margin: 0 0 8px; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .desc { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chips button { padding: 3px 8px; font-size: 12px; }
+  .chips button.on { background: #123b37; border-color: #1f6f66; color: #c9fff6; }
+  .chk { display: flex; gap: 8px; align-items: center; margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+  #log { font: 12px/1.5 'IBM Plex Mono', monospace; color: var(--muted); white-space: pre-wrap; max-height: 220px; overflow-y: auto; }
+  #log b { color: var(--accent); font-weight: 500; }
+  #log .err { color: var(--err); }
+  #about { color: var(--muted); font-size: 12px; }
+  #about dt { color: var(--text); margin-top: 6px; }
+  #about dd { margin: 0; }
+  @media (max-width: 900px) {
+    #app { grid-template-columns: 1fr; height: auto; }
+    #view { border-right: 0; }
+    #stage { min-height: 46vh; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="view">
+    <header>
+      <h1>Schwarzschild Observatory</h1>
+      <span class="tag">multiwavelength survey</span>
+      <a href="./">← black-hole telescope</a>
+      <a href="../">real-time simulator</a>
+    </header>
+    <div id="stage"><p class="empty">Pick a scene and press Observe. Each instrument computes its own emission and absorption from the same generated gas, dust, stars and galaxies, then applies its own beam, units and noise.</p></div>
+    <div id="strip"></div>
+    <div id="notice">Synthetic observations of generated scenes, not of real objects. Composites are false colour and say so in their legends.</div>
+  </section>
+  <aside>
+    <div class="bar">
+      <button id="run" class="primary" disabled>Observe</button>
+      <button id="png" disabled>PNG</button>
+      <button id="fits" disabled>FITS</button>
+    </div>
+    <section class="box">
+      <h2>Scene</h2>
+      <select id="preset"></select>
+      <p class="desc" id="pdesc"></p>
+    </section>
+    <section class="box">
+      <h2>Quality</h2>
+      <select id="quality">
+        <option value="64,512,320,1">Preview: 64³ grid, 512 × 320, 1 sample</option>
+        <option value="128,1024,640,1" selected>Presentation: 128³ grid, 1024 × 640, 1 sample</option>
+        <option value="128,1024,640,2">Presentation: 128³ grid, 1024 × 640, 2 samples</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="noise" checked> detector noise</label>
+      <p class="desc">The command-line build renders the pillars on a 256³ grid for the published images; the browser stops at 128³ to stay within memory.</p>
+    </section>
+    <section class="box">
+      <h2>Instruments</h2>
+      <div class="chips" id="ins"></div>
+    </section>
+    <section class="box">
+      <h2>Progress</h2>
+      <div id="log">Loading WebAssembly…</div>
+    </section>
+    <section class="box">
+      <h2>What each band traces</h2>
+      <dl id="about"></dl>
+    </section>
+  </aside>
+</div>
+<script src="survey.js"></script>
+</body>
+</html>

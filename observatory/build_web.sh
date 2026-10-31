@@ -9,8 +9,9 @@ set -e
 cd "$(dirname "$0")"
 cargo build --release --target wasm32-unknown-unknown -p observatory-wasm
 cp target/wasm32-unknown-unknown/release/observatory_wasm.wasm web/observatory.wasm
-rm -rf web/presets && mkdir -p web/presets web/volumes
+rm -rf web/presets && mkdir -p web/presets/survey web/volumes
 cp presets/*.json web/presets/
+cp presets/survey/*.json web/presets/survey/
 cp volumes/*.obsvol web/volumes/
 [ "$1" = "--no-serve" ] && exit 0
 echo "Observatory at http://localhost:8766"
