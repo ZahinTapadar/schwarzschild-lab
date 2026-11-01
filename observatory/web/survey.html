@@ -24,7 +24,12 @@
   header a:first-of-type { margin-left: auto; }
   header a:hover { color: var(--accent); }
   #stage { flex: 1; display: grid; place-items: center; overflow: auto; padding: 12px; background: radial-gradient(ellipse at center, #0b0f14 0%, #050608 70%); }
-  #stage img { max-width: 100%; max-height: calc(100vh - 230px); box-shadow: 0 0 0 1px var(--line); image-rendering: auto; }
+  #stage img { max-width: 100%; max-height: max(240px, calc(100vh - 290px)); box-shadow: 0 0 0 1px var(--line); image-rendering: auto; display: block; }
+  #frame { position: relative; width: fit-content; max-width: 100%; }
+  #playhead { position: absolute; left: 0; top: 0; pointer-events: none; }
+  #listen { display: flex; gap: 10px; align-items: center; padding: 8px 14px; border-top: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  #listen audio { height: 32px; flex: 1; min-width: 220px; }
+  #listen .what { color: var(--muted); font-size: 12px; flex-basis: 100%; }
   #stage .empty { color: var(--muted); max-width: 460px; text-align: center; }
   #strip { display: flex; gap: 8px; padding: 10px 12px; overflow-x: auto; border-top: 1px solid var(--line); background: var(--panel); min-height: 92px; }
   #strip figure { margin: 0; flex: 0 0 auto; cursor: pointer; }
@@ -70,6 +75,12 @@
       <a href="../">real-time simulator</a>
     </header>
     <div id="stage"><p class="empty">Pick a scene and press Observe. Each instrument computes its own emission and absorption from the same generated gas, dust, stars and galaxies, then applies its own beam, units and noise.</p></div>
+    <div id="listen">
+      <button id="hear" disabled>Listen</button>
+      <audio id="audio" controls preload="none"></audio>
+      <button id="wav" disabled>WAV</button>
+      <div class="what" id="what">Every image has an audio twin: a sonification. Pick an instrument image or a composite and press Listen.</div>
+    </div>
     <div id="strip"></div>
     <div id="notice">Synthetic observations of generated scenes, not of real objects. Composites are false colour and say so in their legends.</div>
   </section>

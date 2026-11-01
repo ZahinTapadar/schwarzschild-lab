@@ -221,3 +221,25 @@ pub unsafe extern "C" fn m_free() { MARCH = None; }
 #[no_mangle]
 #[allow(static_mut_refs)]
 pub unsafe extern "C" fn s_seed() -> f64 { GEN.as_ref().map(|g| (g.scene.seed ^ 0x5u64) as f64).unwrap_or(0.0) }
+
+/// The audio twin (WAV) of a finished instrument, or of every instrument
+/// together when `id` is "survey". Leaves WAV bytes, then a JSON mapping
+/// description is available from `s_sound_meta`.
+#[no_mangle]
+#[allow(static_mut_refs)]
+pub unsafe extern "C" fn s_sound(p: *const u8, n: usize) -> i32 {
+    let Some(g) = GEN.as_ref() else { set_out(vec![]); return -1 };
+    let id = string(p, n);
+    let res = if id == "survey" { survey::survey_audio(&g.preset, &g.done) } else { g.done.iter().find(|o| o.ins.id == id).map(|o| survey::instrument_audio(&g.preset, o)) };
+    match res {
+        Some((wav, meta)) => { SOUND_META = meta.dump(); set_out(wav); 0 }
+        None => { set_out(vec![]); -1 }
+    }
+}
+
+static mut SOUND_META: String = String::new();
+
+/// The mapping description of the last `s_sound`.
+#[no_mangle]
+#[allow(static_mut_refs)]
+pub unsafe extern "C" fn s_sound_meta() { set_out(SOUND_META.as_bytes().to_vec()); }

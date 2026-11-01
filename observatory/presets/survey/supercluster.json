@@ -108,5 +108,9 @@
   "stretch_cmb": {
     "smooth": 1.0,
     "hi": 99.5
+  },
+  "sonify": {
+    "scan": "radar",
+    "seconds": 30
   }
 }

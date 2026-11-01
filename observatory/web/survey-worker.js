@@ -43,6 +43,12 @@ onmessage = async ({ data: m }) => {
     E.s_cross();
     const b = out().buffer;
     reply({ cmd: 'crossed', buf: b }, [b]);
+  } else if (m.cmd === 'sound') {
+    const r = call(E.s_sound, enc.encode(m.id));
+    const b = out().buffer;
+    E.s_sound_meta();
+    const meta = r === 0 ? JSON.parse(dec.decode(out())) : null;
+    reply({ cmd: 'sounded', ok: r === 0, buf: b, meta }, [b]);
   } else if (m.cmd === 'fits') {
     call(E.s_fits, enc.encode(m.id), m.band);
     const b = out().buffer;

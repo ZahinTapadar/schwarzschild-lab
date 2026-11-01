@@ -434,10 +434,32 @@ A supercluster is hard to see in projection and easy to see in redshift space, w
 
 Weak lensing is the honest surprise. At z = 0.047 the lensing kernel is tiny. Across the wide field the peak convergence (0.005) is below twice the shape noise, and only the cluster-core view, with 30 galaxies per arcmin², recovers the mass (κ = 0.17 against 0.013 noise).
 
+### Sonification: every image has an audio twin
+
+Each survey image can also be heard. A sonification is a *data-to-sound mapping* of a synthetic observation; these are not sounds from space. The mapping follows the conventions of NASA's [Chandra, Hubble and Webb sonifications](https://science.nasa.gov/mission/hubble/multimedia/sonifications/), so it reads the same way:
+
+| | Mapping |
+| --- | --- |
+| **Time** | A line sweeps left to right (pillars, cluster core), or an arm turns clockwise from 12 o'clock (supercluster): time is position |
+| **Pitch** | Sweep: height in the image, top highest. Radar: distance from the centre, farther higher. Diffuse light is continuous; compact sources play major-pentatonic notes |
+| **Volume** | Brightness after the picture's own stretch, gated just above the background |
+| **Stereo** | Light on the left is heard on the left |
+| **Layers** | One register and timbre per instrument, lowest to highest: lensing and centimetre radio (sine hum, 41–220 Hz), sub-millimetre and CMB (pad), mid- and near-infrared (woodwind-like), optical (strings-like, 220–880 Hz), X-rays (brass-like, 440–1760 Hz). Within one instrument the bands split its register: bluer is higher |
+| **Compact sources** | Bell-like notes when the scan reaches them; they must stand 5σ above their local background (and, for X-rays, contain at least 6 counts), so detector noise does not play |
+
+An instrument's images share one sonification (its bands as voices); the composites and the montage share the survey's (every instrument at once). CMB and lensing maps are played with their sign flipped, so an SZ decrement or a mass peak is loud. Each WAV (30 s, 44.1 kHz, 16-bit stereo) comes with a JSON file describing its mapping, layers and number of notes. Five tests check the mapping: a bright column sounds when the sweep reaches it and on the right side, higher rows are higher in pitch, brighter is louder without clipping, a point source is one note at its time, and the radar turns clockwise from 12 o'clock.
+
+```sh
+./target/release/observatory survey presets/survey/pillars.json --sonify   # out/survey/audio/*.wav + .json
+./scripts/survey_videos.sh                                                  # images + scan line + audio → out/survey/video/*.mp4
+```
+
+In the browser, **Listen** synthesises the sonification of the image on screen, and the scan line (or radar arm) moves across the picture with the audio.
+
 ### Running it and timing
 
 ```sh
-./scripts/survey_captures.sh     # all three presets → out/survey/{presentation,diagnostics,data}
+./scripts/survey_captures.sh     # all three presets → out/survey/{presentation,diagnostics,data,audio}
 ./scripts/survey_docs.sh         # the figures above
 ./target/release/observatory survey presets/survey/pillars.json --grid 128 --size 1024x640 --spp 2 --only nircam,miri
 ```
@@ -495,7 +517,7 @@ The renderer noise halves for every 4× samples (1/√N). The sensor noise stops
 
 **Reproducibility.** A 160 × 100 render to 64 spp in one go, and to 32 spp followed by a checkpoint resume to 64, give **bit-identical EXR files** (all radiance channels and sensor planes). `observatory fixtures` re-renders every preset at 128 px and compares it with the stored fixtures; all nine pass.
 
-**Tests.** `cargo test --release` runs 78 unit tests (60 for the telescope, 18 for the multiwavelength survey) plus the preset fixture test, all passing. The unit tests cover:
+**Tests.** `cargo test --release` runs 83 unit tests (60 for the telescope, 23 for the multiwavelength survey and its sonification) plus the preset fixture test, all passing. The unit tests cover:
 
 - geodesics and observer geometry;
 - point-lens checks of finite sources;
@@ -506,7 +528,7 @@ The renderer noise halves for every 4× samples (1/√N). The sensor noise stops
 - HDR merging over ten decades and stack noise ∝ 1/√N;
 - the sensor (Poisson statistics, linearity, PSF flux, dark frames, filters);
 - exporters, determinism and checkpoints;
-- the survey's band physics against textbook limits, the pillar front depth, the shared dust column across bands, flux invariance with resolution, the σ₈ normalisation and comoving distances, and the supercluster generator.
+- the survey's band physics against textbook limits, the pillar front depth, the shared dust column across bands, flux invariance with resolution, the σ₈ normalisation and comoving distances, the supercluster generator, and the sonification mapping.
 
 ## What it gets right
 

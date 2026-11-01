@@ -140,5 +140,9 @@
     "xray_ccd": {
       "exposure_s": 300000
     }
+  },
+  "sonify": {
+    "scan": "sweep",
+    "seconds": 30
   }
 }

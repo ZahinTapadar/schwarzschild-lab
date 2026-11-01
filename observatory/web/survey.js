@@ -12,6 +12,7 @@ const PRESETS = [
 
 let wasm, gen, marchers = [];
 let presets = {}, info = null, current = null, images = [], busy = false;
+const sounds = {}; // id → { url, blob, meta }
 const chosen = new Set();
 
 function ask(w, msg, reply, transfer = []) {
@@ -57,13 +58,28 @@ function addImages(list, group) {
   }
 }
 
+// which audio twin an image has: its instrument, or every instrument for
+// composites and the montage; scene diagnostics have none
+const soundId = (im) => (im.ins ? im.ins : im.group === 'composite' ? 'survey' : null);
+
 function show(im, fig) {
   current = im;
   $('#stage').innerHTML = '';
+  const frame = document.createElement('div');
+  frame.id = 'frame';
   const img = document.createElement('img');
   img.src = im.url;
   img.alt = `${im.group} ${im.stem}`;
-  $('#stage').appendChild(img);
+  const ph = document.createElement('canvas');
+  ph.id = 'playhead';
+  frame.append(img, ph);
+  $('#stage').appendChild(frame);
+  const sid = soundId(im);
+  $('#hear').disabled = !sid || busy;
+  const a = $('#audio');
+  if (sid && sounds[sid]) { if (a.dataset.id !== sid) { a.src = sounds[sid].url; a.dataset.id = sid; } describe(sounds[sid].meta); }
+  else { a.pause(); a.removeAttribute('src'); a.dataset.id = ''; $('#what').textContent = sid ? 'Press Listen to synthesise this image\'s sonification.' : 'Scene diagnostics have no sonification.'; }
+  $('#wav').disabled = !(sid && sounds[sid]);
   document.querySelectorAll('#strip figure').forEach((f) => f.classList.toggle('on', f === (fig || im.fig)));
   $('#png').disabled = false;
   $('#fits').disabled = !(im.band !== undefined && im.ins);
@@ -107,6 +123,8 @@ async function observe() {
   $('#run').disabled = true;
   images.forEach((im) => URL.revokeObjectURL(im.url));
   images = [];
+  for (const k of Object.keys(sounds)) { URL.revokeObjectURL(sounds[k].url); delete sounds[k]; }
+  $('#audio').pause(); $('#audio').removeAttribute('src'); $('#audio').dataset.id = '';
   $('#strip').innerHTML = '';
   $('#log').innerHTML = '';
   const name = $('#preset').value;
@@ -163,6 +181,60 @@ async function observe() {
   log(`All instruments in ${((performance.now() - t0) / 1000).toFixed(1)} s.`);
   busy = false;
   $('#run').disabled = false;
+  if (current) show(current);
+}
+
+function describe(meta) {
+  if (!meta) return;
+  const layers = [...meta.layers].sort((a, b) => a.register_hz[0] - b.register_hz[0]).map((l) => `${l.layer} (${Math.round(l.register_hz[0])}–${Math.round(l.register_hz[1])} Hz, ${l.timbre}${l.notes ? `, ${l.notes} notes` : ''})`).join('; ');
+  $('#what').textContent = `Sonification, ${meta.seconds} s: ${meta.scan}. Volume: ${meta.volume}. ${meta.stereo[0].toUpperCase() + meta.stereo.slice(1)}. Layers, low to high: ${layers}. ${meta.statement}`;
+}
+
+async function hear() {
+  const sid = current && soundId(current);
+  if (!sid) return;
+  if (!sounds[sid]) {
+    $('#hear').disabled = true;
+    $('#what').textContent = 'Synthesising…';
+    const r = await ask(gen, { cmd: 'sound', id: sid }, 'sounded');
+    $('#hear').disabled = false;
+    if (!r.ok) { $('#what').textContent = 'No sonification for this image.'; return; }
+    const blob = new Blob([r.buf], { type: 'audio/wav' });
+    sounds[sid] = { blob, url: URL.createObjectURL(blob), meta: r.meta };
+  }
+  const a = $('#audio');
+  if (a.dataset.id !== sid) { a.src = sounds[sid].url; a.dataset.id = sid; }
+  describe(sounds[sid].meta);
+  $('#wav').disabled = false;
+  a.currentTime = 0;
+  a.play();
+}
+
+// the scan line (sweep) or arm (radar) over the picture area, following the audio
+function drawPlayhead() {
+  requestAnimationFrame(drawPlayhead);
+  const c = $('#playhead'), img = $('#frame img'), a = $('#audio');
+  if (!c || !img || !current || !info) return;
+  const w = img.clientWidth, h = img.clientHeight;
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  const g = c.getContext('2d');
+  g.clearRect(0, 0, w, h);
+  const sid = soundId(current);
+  if (!sid || a.dataset.id !== sid || !a.duration || current.stem === 'montage') return;
+  const t = a.currentTime / a.duration;
+  const ph = h * Math.min(1, info.view.h / current.h); // picture area above the legend band
+  g.strokeStyle = 'rgba(255,255,255,0.85)';
+  g.lineWidth = 2;
+  g.beginPath();
+  if (sounds[sid].meta.scan.startsWith('clockwise')) {
+    const ang = 2 * Math.PI * t, r = Math.hypot(w, ph) / 2;
+    g.moveTo(w / 2, ph / 2);
+    g.lineTo(w / 2 + r * Math.sin(ang), ph / 2 - r * Math.cos(ang));
+  } else {
+    g.moveTo(t * w, 0);
+    g.lineTo(t * w, ph);
+  }
+  g.stroke();
 }
 
 function download(blob, name) {
@@ -174,6 +246,9 @@ function download(blob, name) {
 }
 
 $('#run').onclick = observe;
+$('#hear').onclick = hear;
+$('#wav').onclick = () => { const sid = current && soundId(current); if (sid && sounds[sid]) download(sounds[sid].blob, `${$('#preset').value}-${sid}-sonification.wav`); };
+requestAnimationFrame(drawPlayhead);
 $('#png').onclick = () => current && download(current.blob, `${$('#preset').value}-${current.stem}.png`);
 $('#fits').onclick = async () => {
   if (!current || current.band === undefined) return;

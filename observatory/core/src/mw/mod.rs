@@ -30,6 +30,7 @@ pub mod obs;
 pub mod phys;
 pub mod pillars;
 pub mod show;
+pub mod sonify;
 pub mod survey;
 
 use crate::json::Json;

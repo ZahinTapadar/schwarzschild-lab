@@ -140,5 +140,9 @@
   "stretch_cmb": {
     "smooth": 4.0,
     "hi": 99.5
+  },
+  "sonify": {
+    "scan": "sweep",
+    "seconds": 30
   }
 }

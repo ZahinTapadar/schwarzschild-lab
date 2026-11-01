@@ -201,6 +201,30 @@ fn composite_raw(layers: &[Layer], w: usize, h: usize) -> (Vec<u8>, usize, usize
     (img[..iw * h * 4].to_vec(), iw, h)
 }
 
+/// Scan, length and sample rate of the preset's sonifications (`sonify`
+/// block: `scan` "sweep" or "radar", `seconds`).
+pub fn sound_params(p: &Preset) -> (super::sonify::Scan, f64, u32) {
+    let s = p.json.get("sonify");
+    let scan = match s.and_then(|s| s.str("scan")) { Some("radar") => super::sonify::Scan::Radar, _ => super::sonify::Scan::Sweep };
+    (scan, s.and_then(|s| s.num("seconds")).unwrap_or(30.0), s.and_then(|s| s.num("rate")).unwrap_or(44100.0) as u32)
+}
+
+/// The audio twin of one instrument's images: (WAV bytes, metadata).
+pub fn instrument_audio(p: &Preset, obs: &Observation) -> (Vec<u8>, Json) {
+    let (scan, secs, rate) = sound_params(p);
+    let s = super::sonify::instrument_sound(obs, p.stretch(&obs.ins.id), scan, secs, rate);
+    (super::sonify::wav(&s), s.meta)
+}
+
+/// The audio twin of the montage and the cross composites: every instrument
+/// layered in its own register.
+pub fn survey_audio(p: &Preset, obs: &[Observation]) -> Option<(Vec<u8>, Json)> {
+    if obs.is_empty() { return None; }
+    let (scan, secs, rate) = sound_params(p);
+    let s = super::sonify::survey_sound(obs, &|id| p.stretch(id), scan, secs, rate, &format!("{}: every instrument", p.title));
+    Some((super::sonify::wav(&s), s.meta))
+}
+
 pub fn metadata(p: &Preset, sc: &MwScene, v: &View, obs: &Observation, secs: f64) -> Json {
     let mut j = Json::obj();
     j.set("preset", p.title.as_str()).set("generator", sc.meta.clone()).set("instrument", obs.ins.id.as_str())

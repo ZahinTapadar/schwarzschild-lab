@@ -41,6 +41,8 @@ pub fn run(args: &[String]) {
     let name = arg(args, "--name").unwrap_or_else(|| std::path::Path::new(path).file_stem().unwrap().to_string_lossy().into_owned());
     let grid = arg(args, "--grid").map(|g| g.parse::<usize>().unwrap());
     let noise = !args.iter().any(|a| a == "--no-noise");
+    let sonify = args.iter().any(|a| a == "--sonify");
+    if sonify { std::fs::create_dir_all(format!("{tree}/audio")).unwrap(); }
     let only: Option<Vec<String>> = arg(args, "--only").map(|s| s.split(',').map(String::from).collect());
     for d in ["presentation", "diagnostics", "data"] { std::fs::create_dir_all(format!("{tree}/{d}")).unwrap(); }
 
@@ -93,7 +95,20 @@ pub fn run(args: &[String]) {
             let fits = export::fits(obs.w, obs.h, &[&m.data, &m.ideal], &cards);
             std::fs::write(format!("{tree}/data/{name}-{id}-{}.fits", slug.trim_matches('-')), fits).unwrap();
         }
+        if sonify {
+            let t = Instant::now();
+            let (w, meta) = survey::instrument_audio(&p, &obs);
+            std::fs::write(format!("{tree}/audio/{name}-{id}.wav"), w).unwrap();
+            std::fs::write(format!("{tree}/audio/{name}-{id}.json"), meta.dump()).unwrap();
+            eprintln!("  {id}: sonification in {:.1} s", t.elapsed().as_secs_f64());
+        }
         done.push(obs);
+    }
+    if sonify {
+        if let Some((w, meta)) = survey::survey_audio(&p, &done) {
+            std::fs::write(format!("{tree}/audio/{name}-survey.wav"), w).unwrap();
+            std::fs::write(format!("{tree}/audio/{name}-survey.json"), meta.dump()).unwrap();
+        }
     }
     for img in survey::cross_images(&p, &done) {
         write_png(&format!("{tree}/presentation/{name}-{}.png", img.stem), &img, &[]);
