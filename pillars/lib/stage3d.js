@@ -26,8 +26,9 @@
   // and each scene scales its resolution to hold ~50 fps.
   const vis = new Map();
   function mostVisible(id, fig) {
-    const b = fig.getBoundingClientRect();
-    const frac = Math.max(0, Math.min(b.bottom, innerHeight) - Math.max(b.top, 0)) / Math.max(1, b.height);
+    // The IntersectionObserver ratio is measured against the top-level viewport, so it stays right
+    // when this page is embedded in a frame sized to its full height.
+    const frac = fig.__demo && fig.__demo.ratio != null ? fig.__demo.ratio : 1;
     const now = performance.now();
     vis.set(id, { frac, now });
     for (const [k, v] of vis) if (k !== id && now - v.now < 150 && v.frac > frac + 0.02) return false;

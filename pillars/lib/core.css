@@ -86,3 +86,8 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 .termbar a { color: #fff; text-decoration: none; } .termbar span { min-width: 0; overflow-wrap: anywhere; text-align: right; }
 .eyebrow { color: #c678dd; letter-spacing: 0.04em; text-transform: none; }
 .eyebrow::before { content: '# '; color: var(--fg-dim); }
+
+/* embedded in the blog post: the post supplies the title, header and side gutter */
+html.embed .termbar, html.embed header { display: none; }
+html.embed body { padding-left: 0; padding-right: 0; padding-block: 8px 24px; }
+html.embed figure { width: min(960px, 100vw); }

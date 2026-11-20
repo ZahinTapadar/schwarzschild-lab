@@ -70,10 +70,11 @@
         const d = e.target.__demo;
         if (!d) continue;
         d.visible = e.isIntersecting;
+        d.ratio = e.intersectionRatio;
         if (e.isIntersecting && !d.started) start(d);
         if (d.visible && d.inst && d.inst.animate) loop(d);
       }
-    }, { rootMargin: '200px 0px' });
+    }, { rootMargin: '200px 0px', threshold: [0, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1] });
 
     for (const r of registry) {
       const fig = document.getElementById(r.id);
@@ -230,6 +231,20 @@
   }
 
   window.P = { C, sci, fmt, duration, css, lerp, clamp, smooth, rng, demo, drag, planck, bbColor, nmColor };
+  // Inside the blog post (?embed=1) the page sits in a frame sized to its content, so the
+  // frame never scrolls: drop the title block (the post shows it) and send #links to the parent.
+  if (/[?&]embed=1/.test(location.search)) {
+    document.documentElement.classList.add('embed');
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || !window.frameElement) return;
+      const el = document.getElementById(a.getAttribute('href').slice(1));
+      if (!el) return;
+      e.preventDefault();
+      const top = window.frameElement.getBoundingClientRect().top + el.getBoundingClientRect().top;
+      parent.scrollBy({ top: top - 24, behavior: 'smooth' });
+    });
+  }
   const go = () => { swipes(); boot(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
