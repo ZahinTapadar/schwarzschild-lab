@@ -76,6 +76,11 @@
       }
     }, { rootMargin: '200px 0px', threshold: [0, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1] });
 
+    // Reserve every scene's height up front so the page does not shift as scenes start
+    // (otherwise links into the essay land short).
+    document.querySelectorAll('figure .stage[data-aspect]').forEach((st) => {
+      if (!st.style.height) st.style.aspectRatio = String(1 / parseFloat(st.dataset.aspect));
+    });
     for (const r of registry) {
       const fig = document.getElementById(r.id);
       if (!fig) { console.warn('demo figure missing:', r.id); continue; }
@@ -100,7 +105,7 @@
     const size = () => {
       const w = stage.clientWidth;
       const h = Math.round(w * aspect);
-      stage.style.height = h + 'px';
+      stage.style.aspectRatio = ''; stage.style.height = h + 'px';
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
       ctx.w = w; ctx.h = h; ctx.dpr = dpr;
