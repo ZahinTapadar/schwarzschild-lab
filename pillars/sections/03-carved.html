@@ -1,0 +1,107 @@
+<h2 id="carved">Carved by starlight</h2>
+
+<p>Interstellar clouds are usually shapeless, more like smoke than sculpture. The Pillars have rounded heads and long tails that all lean the same way, as if a wind had been blowing on them for a very long time. Something has been. It comes from a cluster of stars about 2 parsecs away, and it is made of light.</p>
+
+<h3>The sculptors</h3>
+
+<p>The cluster, NGC 6611, is about 2 million years old and holds roughly ten thousand solar masses of stars. What matters here are its 19 or so <em>O stars</em>, the rarest and most massive kind. The brightest, HD 168076, is a pair whose larger member weighs tens of Suns and has a surface at about 44,000 K, nearly eight times hotter than the Sun's.</p>
+
+<p>Temperature decides what share of a star's photons carry more than 13.6 electronvolts, enough to tear the electron off a hydrogen atom. Integrating Planck's law gives fewer than one photon in two billion for the Sun. At 44,000 K it is one in four. Adding up every O star in the cluster gives the number this whole section runs on:</p>
+
+<div class="eq">Q ≈ 7 × 10<sup>49</sup> ionising photons per second</div>
+
+<p>That is about 40,000 times more hydrogen-ionising photons than the Sun emits photons of every kind.</p>
+
+<h3>Spending photons</h3>
+
+<p>An ionising photon cannot travel far through neutral gas; it is absorbed almost at once. Once an atom is ionised, its proton and electron eventually find each other again and <em>recombine</em>, which is what makes the Hα glow from the previous section. The atom is then ready to absorb another photon. So the cluster can only keep a region ionised if it re-ionises every atom that recombines there.</p>
+
+<p>Recombinations need a proton to meet an electron, so their rate in a sphere grows with its volume and with the density squared. When that rate equals Q, the ionised sphere stops growing. Bengt Strömgren worked this out in 1939:</p>
+
+<div class="eq">R<sub>S</sub> = (3Q / 4π n<sup>2</sup> α<sub>B</sub>)<sup>1/3</sup></div>
+
+<p>Here n is the number of atoms per cubic centimetre and α<sub>B</sub> = 2.6 × 10⁻¹³ cm³ s⁻¹ is the recombination rate coefficient at 10,000 K. With Q = 7 × 10⁴⁹ s⁻¹ and n = 100 cm⁻³, the cube of the radius is 6.4 × 10⁵⁷ cm³, so R<sub>S</sub> = 1.9 × 10¹⁹ cm, about <span class="num">6 parsecs</span> or twenty light-years.</p>
+
+<p>The scene below switches the cluster on in a cloud of gas. Ionising photons, drawn in violet, stream out and die at the edge of a growing red bubble; inside it, atoms flash pale blue as they recombine. Drag to orbit, and use the sliders to change Q or the density:</p>
+
+<figure id="fig-carved-bubble">
+<div class="stage" data-aspect="0.62"></div>
+<figcaption>Stars, photons and atoms are drawn enlarged; the bubble's size and growth follow the formula.</figcaption>
+</figure>
+
+<p>Notice that the bubble races out at first, then slows and settles. Early on, few atoms have had time to recombine, so almost every photon ionises fresh gas. Within a few recombination times, about 1,200 years at n = 100, recombinations inside use up nearly all the photons, and the front stalls at R<sub>S</sub>.</p>
+
+<p>Notice also how hard it is to move the sphere with Q. Ten times more photons buy only 2.15 times the radius. Density works the other way and more strongly: raise n to 10,000, the density at the edges of the pillars, and the sphere shrinks to 0.3 parsecs. The real nebula glows over 15 to 35 parsecs, which fits n of 10 to 100, so only about 4% of the photons are spent before reaching the pillars 2 parsecs out. The pillars receive almost the full output of the cluster. They survive because they are dense enough to spend it in a very thin layer.</p>
+
+<h3>Boiling off</h3>
+
+<p>Spread over a sphere of radius d = 2 pc, the cluster delivers a flux F = Q / 4πd² ≈ 1.5 × 10¹¹ ionising photons per square centimetre per second. Each is absorbed within a few astronomical units of the cold surface, so the <em>ionisation front</em> is far thinner than the Solar System. What Hubble shows as a bright rim is the hot gas just above it.</p>
+
+<p>That gas is hot because ionisation heats it to about 10,000 K, against 10 to 20 K inside the pillar. Its sound speed, c<sub>s</sub> = √(kT/μm<sub>H</sub>), is 11.6 km/s, about 40 times faster than in the cold interior. Hot gas next to empty space expands into it, so the pillar's surface boils off.</p>
+
+<p>The outflow is also what protects the pillar. It sits between the stars and the surface and keeps recombining, and every recombination costs an incoming photon. Frank Bertoldi showed in 1989 that for a head of radius ℓ, the flow settles at the density where its recombinations eat up the flux:</p>
+
+<div class="eq">n<sub>IF</sub> = √(F / α<sub>B</sub> ℓ)</div>
+
+<p>With ℓ = 0.1 pc this gives about 1,350 electrons per cubic centimetre. Spectrographs measure 1,100 to 2,800 on the pillar skins, a remarkable match for one line with no free parameters. The mass leaving each square centimetre is ṁ ≈ 1.4 m<sub>H</sub> n<sub>IF</sub> c<sub>s</sub>, the factor 1.4 counting helium. That comes to about one kilogram per square kilometre per year, which sounds like nothing until you multiply by a head's 3 × 10²⁵ square kilometres.</p>
+
+<p>The scene below flies around the head of the middle pillar. Gas streams off its lit side, amber where [S II] glows at the front, red in Hα, and teal in [O III] farther out, the same layering spectrographs see. The slider moves the head closer to the cluster or farther away:</p>
+
+<figure id="fig-carved-head">
+<div class="stage" data-aspect="0.62"></div>
+<figcaption>One second of animation is about 12,000 years; the head is modelled as a sphere of radius 0.1 pc and density n(H₂) = 10⁵ cm⁻³.</figcaption>
+</figure>
+
+<p>Notice the fourth readout: only about 1% of arriving photons ionise new atoms, and the rest are spent keeping the flow ionised. That is why the pillar erodes slowly. Notice also that the escaping gas pushes about six times harder than the starlight itself would. The pillars are shaped mainly by the recoil of the gas they shed, which Jan Oort and Lyman Spitzer called the <em>rocket effect</em>.</p>
+
+<p>One such head loses about 17 solar masses per million years, and four of them about 70. Anna McLeod and colleagues measured the real flows with the MUSE spectrograph in 2015 and found about 70. Agreement this close is partly luck, because the sizes and distances are uncertain by a factor of two, but the estimate lands on the right number. Watch the bar at the bottom: a head of 30 solar masses is gone in under 2 million years.</p>
+
+<h3>Why pillars</h3>
+
+<p>A smooth cloud would simply retreat as a flat wall. Real clouds are clumpy, with dense cores scattered through gas a hundred times thinner, and that breaks the symmetry. The front eats through n<sub>IF</sub> c<sub>s</sub> ≈ 1.6 × 10⁹ atoms per square centimetre each second, about 5 × 10²² per million years. Gas is reached once the total column between it and the stars falls below</p>
+
+<div class="eq">N<sub>erode</sub> = n<sub>IF</sub> c<sub>s</sub> t</div>
+
+<p>In thin gas that column builds up slowly, so the front moves fast, about a parsec per million years. A dense core packs 3 × 10²³ atoms per square centimetre into its centre, close to the densest measured column in the Pillars, and would take 6 million years to eat through. Everything behind it is in shadow.</p>
+
+<p>The simulation below runs this rule on your graphics card, computing every point's column to the cluster on every frame. It plays on its own; drag the dashed circles to move the dense cores, or switch them off:</p>
+
+<figure id="fig-carved-shadow">
+<div class="stage" data-aspect="0.6"></div>
+<figcaption>A 2D toy model: real fronts are 3D, slow down farther from the stars, and are also lit by the nebula's own glow.</figcaption>
+</figure>
+
+<p>Notice that columns of gas grow behind each core as the front sweeps past, and every one points back at the star. Move a core and its tail swings to follow the new line of sight. Without the cores the front leaves only a ragged edge. Full 3D simulations, such as those of Mackey and Lim in 2010, grow elephant trunks in exactly this way.</p>
+
+<p>Two more effects help. Hot thin gas pushing on cold dense gas is unstable, like water held up in an upturned glass, so ripples on the front grow into fingers, a cousin of the <em>Rayleigh–Taylor instability</em> (Frieman and Spitzer, 1954). And the pressure of the hot skin drives a shock into each core and squeezes it into a comet shape, a process called <em>radiation-driven implosion</em>.</p>
+
+<p>Shadowing also predicts that the pillars need not stand side by side. Each tail points away from the cluster in three dimensions. MUSE confirmed this: the pillars are staggered by about a parsec along our line of sight, the upper part of the tallest one behind the cluster and the others in front, each with its head toward the stars. Hubble's image shows the rest of the prediction, heads facing the cluster beyond the top of the frame, rims lit on that side:</p>
+
+<figure class="narrow">
+<img src="assets/img/hubble-2014-pillars-visible.jpg" alt="Hubble's 2014 visible-light image of the three Pillars of Creation, dark columns with bright rims on the sides facing upward." loading="lazy">
+<figcaption>The Pillars in visible light, 2014. The cluster lies beyond the top of the frame. <span class="credit">NASA, ESA/Hubble and the Hubble Heritage Team</span></figcaption>
+</figure>
+
+<p>The same squeeze that shapes the heads is compressing the gas inside them, and the next section asks what happens when that gas gets dense enough to collapse into stars.</p>
+
+<h3>Sources for this section</h3>
+<ol class="refs">
+<li>Martins, F., Schaerer, D. &amp; Hillier, D. J. (2005). A new calibration of stellar parameters of Galactic O stars. A&amp;A 436, 1049. <a href="https://arxiv.org/abs/astro-ph/0503346">arXiv:astro-ph/0503346</a></li>
+<li>Sana, H., Gosset, E. &amp; Evans, C. J. (2009). The massive star binary fraction in young open clusters II. NGC 6611 (Eagle Nebula). MNRAS 400, 1479. <a href="https://arxiv.org/abs/0909.0486">arXiv:0909.0486</a></li>
+<li>Stoop, M. et al. (2023). NGC 6611 with Gaia EDR3 and spectroscopy: two stellar populations, O-star census. A&amp;A 670, A108. <a href="https://arxiv.org/abs/2207.08452">arXiv:2207.08452</a></li>
+<li>McLeod, A. F. et al. (2016). Connecting the dots: a correlation between ionizing radiation and cloud mass-loss rate traced by optical integral field spectroscopy. MNRAS 455, 4057. <a href="https://ui.adsabs.harvard.edu/abs/2016MNRAS.455.4057M">ADS</a></li>
+<li>Karim, R. L. et al. (2025). NGC 6611 O stars, ionising photon rate and feedback budget (Table 3). <a href="https://arxiv.org/abs/2511.03978">arXiv:2511.03978</a></li>
+<li>Strömgren, B. (1939). The physical state of interstellar hydrogen. ApJ 89, 526. <a href="https://ui.adsabs.harvard.edu/abs/1939ApJ....89..526S">ADS</a></li>
+<li>Spitzer, L. (1978). Physical Processes in the Interstellar Medium. Wiley (growth of an ionised region toward R<sub>S</sub>).</li>
+<li>Osterbrock, D. E. &amp; Ferland, G. J. (2006). Astrophysics of Gaseous Nebulae and Active Galactic Nuclei, 2nd ed. University Science Books (case-B recombination coefficient, ch. 2).</li>
+<li>Bertoldi, F. (1989). The photoevaporation of interstellar clouds. I. Radiation-driven implosion. ApJ 346, 735. <a href="https://ui.adsabs.harvard.edu/abs/1989ApJ...346..735B">ADS</a></li>
+<li>Oort, J. H. &amp; Spitzer, L. (1955). Acceleration of interstellar clouds by O-type stars. ApJ 121, 6. <a href="https://ui.adsabs.harvard.edu/abs/1955ApJ...121....6O">ADS</a></li>
+<li>McLeod, A. F. et al. (2015). The Pillars of Creation revisited with MUSE: gas kinematics and high-mass stellar feedback traced by optical spectroscopy. MNRAS 450, 1057. <a href="https://arxiv.org/abs/1504.03323">arXiv:1504.03323</a></li>
+<li>Karim, R. L. et al. (2023). The Pillars of Creation with SOFIA: masses, densities, pressures and orientation. AJ. <a href="https://arxiv.org/abs/2309.14637">arXiv:2309.14637</a></li>
+<li>Hester, J. J. et al. (1996). Hubble Space Telescope WFPC2 imaging of M16: photoevaporation and emerging young stellar objects. AJ 111, 2349. <a href="https://ui.adsabs.harvard.edu/abs/1996AJ....111.2349H">ADS</a></li>
+<li>Mackey, J. &amp; Lim, A. J. (2010). Dynamical models for the formation of elephant trunks in H II regions. MNRAS 403, 714. <a href="https://arxiv.org/abs/0912.1499">arXiv:0912.1499</a></li>
+<li>Frieman, E. A. (1954). On elephant-trunk structures in the region of O associations. ApJ 120, 18. <a href="https://ui.adsabs.harvard.edu/abs/1954ApJ...120...18F">ADS</a></li>
+<li>Spitzer, L. (1954). Behavior of matter in space. ApJ 120, 1. <a href="https://ui.adsabs.harvard.edu/abs/1954ApJ...120....1S">ADS</a></li>
+<li>Lefloch, B. &amp; Lazareff, B. (1994). Cometary globules. I. Formation, evolution and morphology. A&amp;A 289, 559. <a href="https://ui.adsabs.harvard.edu/abs/1994A&amp;A...289..559L">ADS</a></li>
+<li>Kuhn, M. A. et al. (2019). Kinematics in young star clusters and associations with Gaia DR2. ApJ 870, 32 (distance 1.74 kpc). <a href="https://arxiv.org/abs/1807.02115">arXiv:1807.02115</a></li>
+</ol>

@@ -1,0 +1,88 @@
+<h2 id="journey">Getting there</h2>
+
+<p>The intro promised to fly you to the Pillars. They are about 5,700 light-years away, so light takes 5,700 years to make the trip. Let's see how close to that a ship can get.</p>
+
+<p>Voyager 1, launched in 1977, is the farthest thing people have built. It leaves the Solar System at about 17 kilometres per second, fast enough to cross the Atlantic in five minutes. Late in 2026 it is crossing a distance of one light-day from Earth, after almost fifty years of flight. At that speed the Pillars are 100 million years away. Even the Parker Solar Probe, which touched 192 km/s while falling past the Sun in December 2024, would need 9 million years. The previous section found that the Pillars lose about 70 Suns of gas per million years and have perhaps one to three million years left. Any probe we can build today would arrive at an empty patch of sky.</p>
+
+<h3>The rocket equation</h3>
+
+<p>A rocket gains speed by throwing mass out of its back at an exhaust speed v<sub>e</sub>. The fuel you burn later has to be carried, and sped up, by the fuel you burn now. Konstantin Tsiolkovsky worked out in 1903 what that compounding does:</p>
+
+<div class="eq">m<sub>0</sub> / m<sub>f</sub> = e<sup>Δv / v<sub>e</sub></sup></div>
+
+<p>The <em>mass ratio</em>, full rocket over empty rocket, grows exponentially with the change of speed Δv. A hydrogen and oxygen engine has v<sub>e</sub> ≈ 4.4 km/s, so reaching Voyager's 17 km/s needs e<sup>17/4.4</sup> ≈ 48: forty-seven tonnes of propellant for every tonne that arrives. Reaching 1% of light speed needs about 10<sup>296</sup>. The observable universe holds only about 10<sup>53</sup> kilograms of ordinary matter.</p>
+
+<p>Stopping at the other end needs the same Δv again, which doubles the exponent and squares the ratio. A fusion rocket like the 1970s Project Daedalus design, with exhaust at about 3% of light speed, could reach 10% of light speed with a ratio near 28, or about 800 if it also brakes. That is buildable on paper, and the Pillars would still be 57,000 years away. To make the trip inside a human life we have to go much closer to the speed of light.</p>
+
+<h3>Flying at one g</h3>
+
+<p>Picture the most comfortable flight plan. The engine pushes at a steady 1 g, so you walk around the ship as you would at home. Halfway there you turn the ship around and brake at 1 g. You arrive at rest.</p>
+
+<p>Special relativity changes what that steady push does. The acceleration you feel stays 1 g, but the speed measured from Earth creeps toward c and never reaches it. In exchange, your clock runs slow compared with Earth's by the Lorentz factor γ = 1/√(1 − v²/c²). For a ship that accelerates at a to the midpoint of a distance d and then brakes, the time on board and the time on Earth are</p>
+
+<div class="eq">τ = (2c / a) · arcosh(1 + a·d / 2c²) &nbsp;&nbsp;&nbsp; t = 2 · √( (d / 2c)² + d / a )</div>
+
+<p>and the peak Lorentz factor, at the midpoint, is γ<sub>max</sub> = 1 + a·d / 2c². In years and light-years, c = 1 and 1 g = 1.03 ly/yr². With d = 5,675 ly, a·d / 2c² ≈ 2,929, so γ<sub>max</sub> ≈ 2,930 and τ = (2 / 1.03) × arcosh(2,930) ≈ 16.8 years. On Earth, 5,677 years pass.</p>
+
+<p>The scene below plays that voyage. The readout shows the speed, γ and the distance covered, with bars for the ship's clock and Earth's. Behind the ship I'm drawing a tube whose width grows with the logarithm of γ, so a wide tube means a slow ship clock. It is only a picture of that number, not a wormhole. Drag the slider to change the acceleration, or switch which clock the animation follows:</p>
+
+<figure id="fig-journey-flight">
+<div class="stage" data-aspect="0.56"></div>
+<figcaption>Exact special-relativistic motion at constant proper acceleration; gravity and the motion of the stars are ignored.</figcaption>
+</figure>
+
+<p>Notice where the ship spends its time. On the ship's clock it hangs near the Sun for a year, crosses thousands of light-years in a few blinks around the middle, and lingers again near the Pillars. On Earth's clock it moves at an almost steady speed while its own clock nearly stops. Earth's bar always ends near 5,700 years, because nothing outruns light. Only the ship's bar shrinks. At 1.5 g, the setting in the novel <em>Project Hail Mary</em>, the trip takes 11.7 ship-years. At 0.1 g it takes 124. The flyby toggle never brakes, and passes the Pillars after only 9.1 years.</p>
+
+<p>The fourth readout is the bill. The relativistic rocket equation replaces Δv with the <em>rapidity</em> φ, defined by v = c·tanh φ, which adds up linearly with each burn: m<sub>0</sub>/m<sub>f</sub> = e<sup>φ·c/v<sub>e</sub></sup>. The best possible exhaust is light itself, from a <em>photon rocket</em> that annihilates matter with antimatter. Then each burn costs e<sup>φ</sup> = γ(1 + β), about 5,860 at the peak, and the two burns together cost 5,860² ≈ 34 million. For a 100-tonne ship that is 3.4 billion tonnes of fuel, half of it antimatter. Annihilating it releases about 3 × 10<sup>29</sup> joules, roughly 500 million years of humanity's present energy use. CERN has made, in its whole history, enough antimatter to light a bulb for a few minutes. A fusion exhaust at 10% of light speed puts ten times as much in the exponent, and the ratio becomes about 10<sup>75</sup>.</p>
+
+<h3>The interstellar headwind</h3>
+
+<p>Suppose we have the fuel. Space between the stars is not empty. Gas fills it at very roughly one hydrogen atom per cubic centimetre, and about one per cent of that mass is dust. At relativistic speed each atom becomes a projectile.</p>
+
+<p>At γ = 2,930 every hydrogen nucleus strikes the bow with 2.7 tera-electronvolts, a few tenths of a proton's energy in the Large Hadron Collider. Because the gas also looks γ times denser from the ship, each square centimetre takes about 9 × 10<sup>13</sup> hits per second of ship time. That is about 4 × 10<sup>11</sup> watts on every square metre, a few hundred million times the sunlight on Earth. Dust is rarer and worse. A one-microgram grain, a speck of fine sand, hits with the energy of 60 tonnes of TNT.</p>
+
+<p>Relativity also rearranges the sky. Starlight reaches the moving ship from directions tilted toward the front, an effect called <em>aberration</em>: tan(θ′/2) = e<sup>−φ</sup> tan(θ/2). Its frequency is multiplied by the Doppler factor δ = γ(1 + β cos θ), and a blackbody star stays a blackbody at temperature δT. The scene below is the view ahead from the cockpit, computed exactly for every star, with gas and dust streaming onto the shield below. The autopilot replays the 1 g trip; drag the slider to hold a speed, drag the view to look around, and switch between the light your eye sees and the light at all wavelengths:</p>
+
+<figure id="fig-journey-cockpit">
+<div class="stage" data-aspect="0.6"></div>
+<figcaption>Stars are random but their aberration and Doppler shifts are exact; the streaks' on-screen speed is a toy, the readouts are not. The inset is a forward telescope with automatic exposure.</figcaption>
+</figure>
+
+<p>Notice the stars crowd forward and turn blue, while behind you a black void opens. At γ = 2,930 the whole front half of the sky is squeezed into a circle 0.04° across, a twelfth of the width of the full Moon. Those stars are shifted by a factor of 5,900, so their light arrives as X-rays, and in visible light they actually dim. The faint 2.7-kelvin glow left over from the Big Bang appears ahead as a 16,000-kelvin glare, and the shield takes a beam that no material we know could survive for long.</p>
+
+<h3>Two clocks</h3>
+
+<p>Let's land and add up the time. Leave in 2030, arrive 16.8 years older, and the calendar at home reads about 7700. The 1995 Hubble photograph shows the Pillars as they were 5,700 years before 1995; on arrival you see them as they are around 7700, about 11,400 years later in their history. During the flight you overtake all the light from those years, so a forward telescope would replay 11,400 years of the Pillars in 16.8. At 70 Suns per million years they lose less than one Sun of their 300 in that time, and the first supernova in NGC 6611 is still over a million years off. They will be there.</p>
+
+<p>On a true-scale map the Pillars sit five times closer than the Galactic centre, and Andromeda does not fit on the page. The video "Time Dilation Visualized" solves this by redrawing its map so that distance means travel time. The scene below does the same with a model of the Milky Way and its neighbours, switching between true distance and ship time; drag to turn it and use the slider to change the acceleration:</p>
+
+<figure id="fig-journey-map">
+<div class="stage" data-aspect="0.62"></div>
+<figcaption>The Milky Way's shape is a toy model; landmark directions and distances are real. Ship times are for a trip that stops at the destination.</figcaption>
+</figure>
+
+<p>Notice the galaxy fold up around the Sun. At 1 g, Proxima Centauri is 3.5 years away, the Pillars 16.8, the Galactic centre 19.8, the Large Magellanic Cloud 23.3 and Andromeda 28.6. A destination almost a million times farther costs only eight times more of your life, because ship time grows with the logarithm of distance. Earth's clock does no such thing. Reach Andromeda while still young, and you return to an Earth five million years older.</p>
+
+<p>Suppose we pay that price, cut the engines and drift into the nebula at walking pace. What would the Pillars actually look like through the window?</p>
+
+<h3>Sources for this section</h3>
+<ol class="refs">
+<li>NASA Science (2025). Where are Voyager 1 and Voyager 2 now? https://science.nasa.gov/mission/voyager/where-are-voyager-1-and-voyager-2-now/</li>
+<li>NASA Science (2024). Parker Solar Probe: closest approach of 24 December 2024 at about 692,000 km/h. https://science.nasa.gov/mission/parker-solar-probe/</li>
+<li>Kuhn, M. A. et al. (2019). Kinematics in Young Star Clusters and Associations with Gaia DR2. ApJ 870, 32 (distance 1.74 kpc). https://arxiv.org/abs/1807.02115</li>
+<li>Tsiolkovsky, K. E. (1903). Exploration of Outer Space by Means of Rocket Devices. Summary: https://en.wikipedia.org/wiki/Tsiolkovsky_rocket_equation</li>
+<li>Ackeret, J. (1946). Zur Theorie der Raketen. Helvetica Physica Acta 19, 103 (the relativistic rocket equation).</li>
+<li>Gibbs, P. and Baez, J. (1996, updated). The Relativistic Rocket. https://math.ucr.edu/home/baez/physics/Relativity/SR/Rocket/rocket.html</li>
+<li>Rindler, W. (2006). Relativity: Special, General, and Cosmological, 2nd ed., Oxford University Press, chapter 3 (hyperbolic motion).</li>
+<li>Bond, A. and Martin, A. R. (1978). Project Daedalus: the final report on the BIS starship study. Journal of the British Interplanetary Society, Supplement.</li>
+<li>Energy Institute (2024). Statistical Review of World Energy 2024 (global primary energy about 620 EJ in 2023). https://www.energyinst.org/statistical-review</li>
+<li>CERN. Antimatter. https://home.cern/science/physics/antimatter</li>
+<li>Hoang, T., Lazarian, A., Burkhart, B. and Loeb, A. (2017). The interaction of relativistic spacecrafts with the interstellar medium. ApJ 837, 5. https://arxiv.org/abs/1608.05284</li>
+<li>Semyonov, O. G. (2014). Radiation hazard of relativistic interstellar flight. Acta Astronautica 99, 52.</li>
+<li>McKinley, J. M. and Doherty, P. (1979). In search of the "starbow": The appearance of the starfield from a relativistic spaceship. American Journal of Physics 47, 309.</li>
+<li>GRAVITY Collaboration (2019). A geometric distance measurement to the Galactic center black hole with 0.3% uncertainty. A&amp;A 625, L10. https://arxiv.org/abs/1904.05721</li>
+<li>Menten, K. M. et al. (2007). The distance to the Orion Nebula. A&amp;A 474, 515. https://arxiv.org/abs/0709.0485</li>
+<li>Pietrzyński, G. et al. (2019). A distance to the Large Magellanic Cloud that is precise to one per cent. Nature 567, 200. https://arxiv.org/abs/1903.08096</li>
+<li>McLeod, A. F. et al. (2015). The Pillars of Creation revisited with MUSE: gas kinematics and high-mass stellar feedback traced by optical spectroscopy. MNRAS 450, 1057. https://arxiv.org/abs/1504.03323</li>
+<li>The Overview Effekt (2026). Time Dilation Visualized (video; presentation ideas for the ship and Earth clocks and the travel-time map). YouTube.</li>
+</ol>
