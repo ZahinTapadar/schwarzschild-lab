@@ -1,0 +1,99 @@
+<h2 id="light">Light from atoms</h2>
+
+<p>Every photon in a picture of the Pillars was made by one atom doing one small thing. Its colour tells us which atom made it and what happened to that atom. Where photons are missing, there is dust. Reading both explains the comparison at the top of this page.</p>
+
+<h3>A ladder of energies</h3>
+
+<p>Hydrogen is one proton and one electron. The electron cannot hold just any energy. It sits on one of a set of allowed levels, like rungs on a ladder, numbered <i>n</i> = 1, 2, 3 and so on, with energies</p>
+
+<div class="eq">E<sub>n</sub> = −13.6 eV / n<sup>2</sup></div>
+
+<p>When the electron drops to a lower rung, the atom emits one photon carrying the energy difference. Johannes Rydberg wrote down the resulting wavelengths in 1888:</p>
+
+<div class="eq">1/λ = R<sub>H</sub> (1/n<sub>1</sub><sup>2</sup> − 1/n<sub>2</sub><sup>2</sup>)</div>
+
+<p>with R<sub>H</sub> = 109,678 cm<sup>−1</sup>. For a drop from rung 3 to rung 2 the bracket is 1/4 − 1/9 = 0.1389, so 1/λ = 15,233 cm<sup>−1</sup> and λ = 656.5 nm. Astronomers quote wavelengths in air, where light is 0.03% slower, giving <span class="ha">656.3 nm</span>: the deep red line called <span class="ha">hydrogen-alpha</span>, or Hα.</p>
+
+<p>Around the Pillars, the young stars of NGC 6611 pour out about 7 × 10<sup>49</sup> photons per second energetic enough to strip hydrogen's electron off entirely. The gas is a soup of bare protons and free electrons at about 10,000 K. Now and then a proton catches an electron, which is called <i>recombination</i>. The electron usually lands on a high rung and tumbles down, firing one photon at each step.</p>
+
+<p>The figure below plays this out. One atom sits in the middle, its rungs drawn as rings. Each photon it emits flies down to a spectrum laid out on the floor, ultraviolet on the left and infrared on the right, and adds to the bar of its wavelength. Unseen atoms add to the bars too, so the spectrum fills quickly. Drag to look around; the slider sets how dense the gas is:</p>
+
+<figure id="fig-light-atom">
+<div class="stage" data-aspect="0.62"></div>
+<figcaption>A toy model: ring sizes are schematic, and the cascade uses level-averaged hydrogen transition rates with case-B trapping.</figcaption>
+</figure>
+
+<p>Notice that the tallest visible bar is Hα, and the readout settles near 0.4 Hα photons per recombination (the full calculation gives 0.45). Drops to rung 1 are ultraviolet. Hydrogen absorbs those so eagerly that they are swallowed and re-emitted nearby until they turn into Balmer photons, so I only let Lyman-alpha out. Drops that end on rung 3 or higher are infrared.</p>
+
+<p>Notice also how often this happens. A proton waits on average 1/(n<sub>e</sub> α<sub>B</sub>) for an electron, where α<sub>B</sub> = 2.6 × 10<sup>−13</sup> cm<sup>3</sup>/s. In the open nebula, with 100 electrons per cubic centimetre, that is about 1,200 years. On the pillar skins, at about 2,000 cm<sup>−3</sup>, it is 60 years. Twenty times the atoms, each recombining twenty times as often: that is why the skins glow.</p>
+
+<h3>Lines that should not exist</h3>
+
+<p>The two ions on either side of the atom glow too. Their brightest lines, <span class="oiii">500.7 nm</span> from O<sup>2+</sup> and <span class="sii">671.6 and 673.1 nm</span> from S<sup>+</sup>, were seen in nebulae decades before any laboratory produced them. In 1927 Ira Bowen showed why. A passing electron easily bumps these ions up to a low excited level, but the way down is a jump quantum mechanics makes extremely slow. Physicists call it <i>forbidden</i>. Hydrogen drops from rung 3 to 2 in about 20 billionths of a second. O<sup>2+</sup> waits about 40 seconds, and S<sup>+</sup> about an hour.</p>
+
+<p>A waiting ion is in danger. If another electron hits it first, the energy leaves as motion and no photon is made. The share of excitations that still end in a photon is</p>
+
+<div class="eq">f = 1 / (1 + n<sub>e</sub> / n<sub>crit</sub>)</div>
+
+<p>where the <i>critical density</i> n<sub>crit</sub> is where the two clocks tie: about 7 × 10<sup>5</sup> cm<sup>−3</sup> for <span class="oiii">[O III]</span> and a few thousand for <span class="sii">[S II]</span>. Slide the density up in the figure. You will see grey sparks where a second electron steals the energy, and the forbidden bars shrink while hydrogen's carry on. The best laboratory vacuum holds about 3 × 10<sup>6</sup> particles per cubic centimetre, already too dense, and air holds 2.5 × 10<sup>19</sup>. The square brackets in [O III] mark a forbidden line.</p>
+
+<p>The two [S II] lines have different critical densities, so their ratio is a density gauge readable from 5,700 light-years away. In thin gas 671.6 nm is 1.45 times brighter than 673.1 nm; above a few thousand per cubic centimetre the ratio falls toward 0.43. Applied to the Pillars it gives about 2,000 electrons per cubic centimetre on the skins (McLeod et al. 2015).</p>
+
+<p>Each ion also has a home. Stripping oxygen's second electron takes 35 eV, so [O III] glows out in the open gas facing the stars. S<sup>+</sup> forms with 10.4 eV and is destroyed above 23 eV, so [S II] hugs the edge of the cold gas, where the hardest photons are already used up. Hα comes from everywhere in between.</p>
+
+<h3>Colours are a choice</h3>
+
+<p>Hubble photographs the nebula through narrow filters, each passing a band about 2 to 5 nm wide around one line. Through F656N a star of the same total brightness as a patch of nebula is more than a hundred times fainter, because the filter keeps almost all of the Hα and almost none of the star's continuum. Each filter gives a grey picture of one ion. To make a colour image, someone must decide which picture goes into the red, green and blue channels of a screen.</p>
+
+<p>The obvious choice is each line's real colour, which paints hydrogen and sulphur the same red. In 1995 Jeff Hester and Paul Scowen put <span class="sii">[S II]</span> in red, <span class="ha">Hα</span> in green and <span class="oiii">[O III]</span> in blue, keeping the lines in wavelength order. This is now called the Hubble palette. The scene below splits a model of the pillars into these three lines and tours the choices. Drag to orbit, or pick a palette and a single line:</p>
+
+<figure id="fig-light-palette">
+<div class="stage" data-aspect="0.6"></div>
+<figcaption>A ray-marched toy model of the three pillars with illustrative line strengths. It is not a map of M16.</figcaption>
+</figure>
+
+<p>Notice that with true line ratios the Hubble palette is mostly green, because Hα outshines the other two. Scaling each channel up separately brings out three layers: gold where sulphur hugs the surfaces, green where hydrogen glows, blue farther out where oxygen is doubly ionized. Real images are balanced the same way. The colours map ions. An eye would see none of them, because the nebula is too faint to wake the colour-sensing cones.</p>
+
+<h3>What the dust does</h3>
+
+<p>Now the darkness. About one percent of the pillars' mass is dust: silicate and carbon grains mostly under a tenth of a micrometre across. A grain much smaller than the wavelength barely notices the wave, so dust blocks blue light most, red less and infrared much less. Astronomers measure this as <i>extinction</i> A<sub>λ</sub> in magnitudes, a dimming by 10<sup>0.4 A<sub>λ</sub></sup>. Cardelli, Clayton and Mathis fitted its shape in 1989, as a ratio A<sub>λ</sub>/A<sub>V</sub> to the visual value. A photon survives with probability</p>
+
+<div class="eq">e<sup>−τ</sup>, &nbsp; τ = A<sub>λ</sub> / 1.086</div>
+
+<p>Radio maps of carbon monoxide count the hydrogen atoms along each line of sight (Karim et al. 2023), and every 2.2 × 10<sup>21</sup> atoms per square centimetre carries about one magnitude of A<sub>V</sub>. That gives A<sub>V</sub> ≈ 30 through the small pillar's head, 50 through the middle one's and 130 through the core of the tallest. Take the middle head. At Hα, A<sub>λ</sub>/A<sub>V</sub> = 0.82, so A ≈ 41 magnitudes, and one photon in about 25 thousand trillion gets through. At 2.2 µm the ratio is 0.11: 5.7 magnitudes, one in 190. At 4.4 µm it is about 0.05: 2.5 magnitudes, one in 10.</p>
+
+<p>In the figure below a star sends equal numbers of photons at six wavelengths through a pillar. Each photon draws a random survival depth and is absorbed when the optical depth along its path reaches it. The panel counts what reaches the screen and marks e<sup>−τ</sup> averaged over the beam. The scene tours four columns of dust; you can also pick one:</p>
+
+<figure id="fig-light-dust">
+<div class="stage" data-aspect="0.6"></div>
+<figcaption>A toy Monte Carlo with uniform density in a cylinder. A<sub>λ</sub>/A<sub>V</sub> is from Cardelli et al. (1989) with R<sub>V</sub> = 3.1, and from Indebetouw et al. (2005) at 4.4 µm.</figcaption>
+</figure>
+
+<p>At the pillar's thin edge, blue light already dies inside while the infrared streams through. In the heads, nothing visible survives, and only the longest wavelengths still make it. In the core of the tallest pillar, even 4.4 µm light is stopped. A pillar is a cloud whose transparency depends on the colour you look with.</p>
+
+<p>Hubble photographed the Pillars again in 2014, in visible light and with its infrared camera at 1.1 and 1.6 µm. I've cropped and scaled the two images so their stars line up. Drag across the picture:</p>
+
+<figure class="narrow">
+<div class="swipe" data-label="Drag to compare Hubble 2014 visible and infrared"><img src="assets/img/hubble-2014-pillars-visible-matched.jpg" alt="Hubble 2014 visible-light image: dense, opaque brown pillars against blue-green glowing gas, with few stars" width="1600" height="1499"><img src="assets/img/hubble-2014-pillars-infrared-matched.jpg" alt="Hubble 2014 near-infrared image of the same field: the pillars are faint, ghostly outlines and thousands of stars shine through and around them" width="1600" height="1499"><span class="tag" style="left:10px">Infrared 1.1–1.6 µm</span><span class="tag" style="right:10px">Visible</span></div>
+<figcaption>Hubble WFC3, 2014, visible and near-infrared channels, cropped to a common field.<span class="credit">NASA, ESA/Hubble and the Hubble Heritage Team</span></figcaption>
+</figure>
+
+<p>Notice the stars. In visible light the field holds a few dozen. In the infrared there are thousands, most far behind the nebula, and the pillars thin to smoky outlines. Only the dense heads still cast real shadows at 1.6 µm, as the extinction law predicts. Webb's view at the top of this page, out to 4.7 µm, goes further still and finds young stars inside the heads.</p>
+
+<p>The light has told us what glows and where. Oxygen shines farthest out, hydrogen closer in and sulphur right at the edge of the cold gas, so the starlight must be eating into each pillar from outside. The next section follows that starlight in: how far it gets, how much gas it boils off, and why it leaves pillars standing instead of a smooth wall.</p>
+
+<h3>Sources for this section</h3>
+<ol class="refs">
+<li>Cardelli, J. A., Clayton, G. C. &amp; Mathis, J. S. (1989). The relationship between infrared, optical, and ultraviolet extinction. ApJ 345, 245. <a href="https://ui.adsabs.harvard.edu/abs/1989ApJ...345..245C">ui.adsabs.harvard.edu/abs/1989ApJ...345..245C</a></li>
+<li>Indebetouw, R. et al. (2005). The wavelength dependence of interstellar extinction from 1.25 to 8.0 µm using GLIMPSE data. ApJ 619, 931. <a href="https://arxiv.org/abs/astro-ph/0406403">arxiv.org/abs/astro-ph/0406403</a></li>
+<li>Osterbrock, D. E. &amp; Ferland, G. J. (2006). Astrophysics of Gaseous Nebulae and Active Galactic Nuclei, 2nd ed. University Science Books. (Recombination coefficients, case B, critical densities.)</li>
+<li>Wiese, W. L. &amp; Fuhr, J. R. (2009). Accurate atomic transition probabilities for hydrogen, helium, and lithium. J. Phys. Chem. Ref. Data 38, 565. <a href="https://doi.org/10.1063/1.3077727">doi.org/10.1063/1.3077727</a></li>
+<li>Bowen, I. S. (1927). The origin of the nebulium spectrum. Nature 120, 473. <a href="https://doi.org/10.1038/120473a0">doi.org/10.1038/120473a0</a></li>
+<li>Sanders, R. L. et al. (2016). The MOSDEF survey: electron density and ionization parameter at z ~ 2.3. ApJ 816, 23. <a href="https://arxiv.org/abs/1509.03636">arxiv.org/abs/1509.03636</a></li>
+<li>Hester, J. J. et al. (1996). Hubble Space Telescope WFPC2 imaging of M16: photoevaporation and emerging young stellar objects. AJ 111, 2349. <a href="https://ui.adsabs.harvard.edu/abs/1996AJ....111.2349H">ui.adsabs.harvard.edu/abs/1996AJ....111.2349H</a></li>
+<li>McLeod, A. F. et al. (2015). Connecting the dots: a correlation between ionizing radiation and cloud mass-loss rate traced by optical integral field spectroscopy. MNRAS 450, 1057. <a href="https://arxiv.org/abs/1504.03323">arxiv.org/abs/1504.03323</a></li>
+<li>Karim, R. L. et al. (2023). SOFIA FEEDBACK survey: the Pillars of Creation in [C II] and molecular lines. AJ 166, 240. <a href="https://arxiv.org/abs/2309.14637">arxiv.org/abs/2309.14637</a></li>
+<li>Güver, T. &amp; Özel, F. (2009). The relation between optical extinction and hydrogen column density in the Galaxy. MNRAS 400, 2050. <a href="https://arxiv.org/abs/0903.2057">arxiv.org/abs/0903.2057</a></li>
+<li>STScI. WFPC2 Instrument Handbook (narrowband filters F502N, F656N, F673N). <a href="https://www.stsci.edu/hst/instrumentation/legacy/wfpc2">www.stsci.edu/hst/instrumentation/legacy/wfpc2</a></li>
+<li>ESA/Hubble (2015). Hubble goes high-definition to revisit iconic "Pillars of Creation" (heic1501). <a href="https://esahubble.org/news/heic1501/">esahubble.org/news/heic1501/</a></li>
+</ol>
